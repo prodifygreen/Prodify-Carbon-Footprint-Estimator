@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prodify | Green - Advanced Carbon Estimator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-900: #0a2e1a; --green-800: #0f3d22; --green-700: #145a30; --green-600: #1a7a40;
+    --green-500: #22a355; --green-400: #3dbf6e; --green-100: #d0f0dc; --green-50: #eafaf1;
+    --gold: #c8982a; --sand: #f8f4ed;
+    --text-dark: #1a1814; --text-mid: #3d3830; --text-light: #7a7268; --white: #ffffff;
+    --red-500: #d63b3b; --red-50: #fdeaea; --blue-500: #2b6cb0; --blue-50: #ebf4ff;
+    --amber-500: #b7791f;
+    --shadow-md: 0 4px 16px rgba(10,46,26,.12); --radius: 12px; --radius-sm: 8px; --radius-lg: 20px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--sand); color: var(--text-dark); min-height: 100vh; }
+
+  .site-header {
+    background: var(--green-900); color: var(--white); padding: 0 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,.3);
+  }
+  .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .logo-box { width: 36px; height: 36px; background: #000; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900; color: var(--green-400); }
+  .logo-text { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--white); line-height: 1.1; }
+  .logo-text span { display: block; font-size: 11px; font-family: 'DM Sans', sans-serif; color: var(--green-300); font-weight: 300; letter-spacing: .5px; }
+  .header-badge { background: var(--green-500); color: var(--white); font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 99px; }
+
+  .main-container { max-width: 1000px; margin: 0 auto; padding: 40px 24px 80px; }
+  .hero-section { text-align: center; margin-bottom: 48px; }
+  .hero-tag { display: inline-block; background: var(--green-100); color: var(--green-800); font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 99px; margin-bottom: 16px; }
+  .hero-title { font-family: 'DM Serif Display', serif; font-size: clamp(28px, 4vw, 42px); color: var(--green-900); margin-bottom: 12px; }
+  .hero-sub { font-size: 16px; color: var(--text-light); max-width: 700px; margin: 0 auto; line-height: 1.6; }
+
+  .card { background: var(--white); border-radius: var(--radius-lg); padding: 36px 40px; box-shadow: var(--shadow-md); margin-bottom: 24px; border: 1px solid rgba(10,46,26,.06); }
+  .card-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--green-900); margin-bottom: 6px; display: flex; align-items: center; gap: 12px; }
+  .card-desc { font-size: 14px; color: var(--text-light); margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+  .card-icon { width: 40px; height: 40px; background: var(--green-50); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--green-600); }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .form-group { margin-bottom: 0; display: flex; flex-direction: column; }
+  .form-group.full-width { grid-column: 1 / -1; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-mid); letter-spacing: .4px; text-transform: uppercase; margin-bottom: 8px; }
+  .form-group input, .form-group select {
+    width: 100%; padding: 12px 16px; border: 1.5px solid #e0dbd4; border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-dark); background: var(--sand); outline: none; transition: border-color .2s, box-shadow .2s; appearance: none;
+  }
+  .form-group select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237a7268' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
+  .form-group input:focus, .form-group select:focus { border-color: var(--green-500); box-shadow: 0 0 0 3px rgba(34,163,85,.12); background: var(--white); }
+
+  .btn-primary { width: 100%; padding: 16px; background: var(--green-600); color: var(--white); border: none; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; transition: background .2s; margin-top: 12px; }
+  .btn-primary:hover { background: var(--green-700); }
+
+  .results-section { display: none; }
+  .results-section.active { display: block; }
+  
+  .score-hero { background: linear-gradient(135deg, var(--green-900), var(--green-700)); border-radius: var(--radius-lg); padding: 48px; color: var(--white); text-align: center; margin-bottom: 24px; overflow: hidden; }
+  .score-title { font-family: 'DM Serif Display', serif; font-size: 24px; margin-bottom: 24px; opacity: 0.9; }
+  .big-score { font-size: 64px; font-weight: 700; line-height: 1; margin-bottom: 8px; }
+  .score-unit { font-size: 18px; opacity: 0.7; margin-bottom: 24px; }
+  .grade-badge { display: inline-block; padding: 8px 24px; border-radius: 99px; font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+  .grade-a { background: var(--green-400); color: var(--green-900); }
+  .grade-b { background: #81C784; color: var(--green-900); }
+  .grade-c { background: var(--gold); color: var(--green-900); }
+  .grade-d { background: var(--amber-500); color: var(--white); }
+  .grade-f { background: var(--red-500); color: var(--white); }
+  .disclaimer-box { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: var(--radius-sm); padding: 12px; font-size: 12px; color: rgba(255,255,255,.8); line-height: 1.5; max-width: 700px; margin: 0 auto; }
+
+  .breakdown-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .breakdown-card { background: var(--white); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow-md); border-top: 4px solid var(--green-500); text-align: center; }
+  .breakdown-card.operational { border-top-color: var(--blue-500); }
+  .breakdown-card.transport { border-top-color: var(--amber-500); }
+  .bc-label { font-size: 12px; color: var(--text-light); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+  .bc-value { font-size: 24px; font-weight: 700; color: var(--text-dark); }
+  .bc-sub { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+
+  .suggestion-list { list-style: none; }
+  .suggestion-item { padding: 16px; border-bottom: 1px solid #eee; display: flex; gap: 16px; align-items: flex-start; }
+  .suggestion-item:last-child { border-bottom: none; }
+  .sug-icon { width: 32px; height: 32px; background: var(--green-50); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--green-600); flex-shrink: 0; font-size: 14px; }
+  .sug-text h4 { font-size: 14px; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; }
+  .sug-text p { font-size: 13px; color: var(--text-light); line-height: 1.5; }
+
+  .action-row { display: flex; gap: 12px; margin-top: 32px; }
+  .btn-download { flex: 1; padding: 16px; background: var(--green-700); color: var(--white); border: none; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all .2s; }
+  .btn-download:hover { background: var(--green-900); }
+  .btn-reset { padding: 16px 32px; background: var(--white); color: var(--text-mid); border: 1.5px solid #e0dbd4; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; }
+
+  @media (max-width: 768px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .breakdown-grid { grid-template-columns: 1fr; }
+    .site-header { padding: 0 20px; }
+    .card { padding: 24px; }
+    .score-hero { padding: 32px 20px; }
+    .big-score { font-size: 48px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo">
+    <div class="logo-box">P</div>
+    <div class="logo-text">Prodify<span>Green - Advanced Carbon Estimator</span></div>
+  </div>
+  <div class="header-badge">LEED v4.1 ALIGNED</div>
+</header>
+
+<div class="main-container">
+  <div class="hero-section">
+    <div class="hero-tag">Professional Pre-Construction Assessment</div>
+    <h1 class="hero-title">Advanced Lifecycle Carbon Estimator</h1>
+    <p class="hero-sub">Utilizing ASHRAE 90.1 baselines, WorldGBC benchmarks, and LEED v4.1 credit thresholds to calculate Embodied, Operational, and Transport carbon before construction begins.</p>
+  </div>
+
+  <div id="form-section">
+    <!-- IP & Project Details -->
+    <div class="card">
+      <div class="card-title"><div class="card-icon">🏗️</div> Integrative Process & Project</div>
+      <p class="card-desc">Fundamental parameters defining scale, lifespan, and climate zone (impacts heating/cooling loads).</p>
+      <div class="form-grid">
+        <div class="form-group full-width"><label>Project Name</label><input type="text" id="pName" placeholder="e.g. Net-Zero Commercial Hub"></div>
+        <div class="form-group"><label>Climate Zone (ASHRAE)</label>
+          <select id="pClimate">
+            <option value="hot_wet">Zone 1-2: Hot & Humid (High Cooling Load)</option>
+            <option value="hot_dry">Zone 2-3: Hot & Dry (Extreme Cooling Load)</option>
+            <option value="mixed" selected>Zone 4: Mixed Humid (Balanced Heating/Cooling)</option>
+            <option value="cold">Zone 5-6: Cold (High Heating Load)</option>
+            <option value="subarctic">Zone 7-8: Subarctic (Extreme Heating Load)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Grid Carbon Intensity</label>
+          <select id="pGrid">
+            <option value="0.25">Clean Grid (Hydro/Nuclear - 0.25 kgCO2/kWh)</option>
+            <option value="0.45" selected>Average Grid (Mixed Sources - 0.45 kgCO2/kWh)</option>
+            <option value="0.75">Fossil Grid (Coal/Gas Heavy - 0.75 kgCO2/kWh)</option>
+            <option value="0.90">Diesel/Generator Grid (0.90 kgCO2/kWh)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Project Type</label>
+          <select id="pType">
+            <option value="commercial">Commercial Office</option>
+            <option value="residential">Residential Multi-Family</option>
+            <option value="industrial">Industrial / Warehouse</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Total Gross Floor Area (m²)</label><input type="number" id="pArea" value="5000"></div>
+        <div class="form-group"><label>Building Lifespan (Years)</label><input type="number" id="pLife" value="60"></div>
+      </div>
+    </div>
+
+    <!-- LT & Site -->
+    <div class="card">
+      <div class="card-title"><div class="card-icon">📍</div> Location & Transportation (LT)</div>
+      <p class="card-desc">Site selection and mobility infrastructure heavily impact Scope 3 transport emissions over the lifecycle.</p>
+      <div class="form-grid">
+        <div class="form-group"><label>Site Development Type</label>
+          <select id="pSite">
+            <option value="greenfield">Greenfield (Undeveloped Land)</option>
+            <option value="infill" selected>Urban Infill / Brownfield</option>
+            <option value="transit">Transit-Oriented Development (TOD)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Parking Capacity Ratio</label>
+          <select id="pParking">
+            <option value="high">High Ratio (>3 spaces per 1000 sqft)</option>
+            <option value="standard" selected>Standard Code Minimum</option>
+            <option value="reduced">Reduced (LEED LT Credit)</option>
+            <option value="none">Car-Free / Minimal Parking</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Green Mobility Infrastructure</label>
+          <select id="pMobility">
+            <option value="none">Standard Parking Only</option>
+            <option value="ev">EV Charging Stations (LEED LT Credit)</option>
+            <option value="full">EV + Bicycle + Transit Subsidies</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- MR & Embodied Carbon -->
+    <div class="card">
+      <div class="card-title"><div class="card-icon">🧱</div> Materials & Resources (MR)</div>
+      <p class="card-desc">The structural core and envelope dictate the majority of embodied carbon. Aligns with LEED MR and EPD credits.</p>
+      <div class="form-grid">
+        <div class="form-group"><label>Primary Structural System</label>
+          <select id="pStruct">
+            <option value="concrete_steel">Reinforced Concrete & Steel (High Carbon)</option>
+            <option value="steel_frame" selected>Primary Steel Frame</option>
+            <option value="masonry">Masonry / Blockwork</option>
+            <option value="mass_timber">Mass Timber / Hybrid Timber (Low Carbon)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Concrete Cement Replacement (SCMs)</label>
+          <select id="pSCM">
+            <option value="0">None (100% Portland Cement)</option>
+            <option value="25" selected>Moderate (25% Fly Ash/Slag)</option>
+            <option value="40">High (40%+ SCMs - LEED MR Credit)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Building Envelope / Facade</label>
+          <select id="pFacade">
+            <option value="curtainwall">Full Curtainwall / High Glazing (High Carbon)</option>
+            <option value="mixed" selected>Mixed Glazing & Opaque Panels</option>
+            <option value="opaque">Mostly Opaque / High-Performance Wall</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Recycled Steel Content</label>
+          <select id="pSteelRecycle">
+            <option value="20">Standard (20% Recycled)</option>
+            <option value="60">High (60%+ Recycled - LEED MR Credit)</option>
+            <option value="90">Ultra-High (Electric Arc Furnace 90%+)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- EA & Operational Carbon -->
+    <div class="card">
+      <div class="card-title"><div class="card-icon">⚡</div> Energy & Atmosphere (EA)</div>
+      <p class="card-desc">Operational energy and refrigerants are the largest contributors to lifecycle carbon. Aligns with ASHRAE 90.1 baselines.</p>
+      <div class="form-grid">
+        <div class="form-group"><label>Primary Energy Source</label>
+          <select id="pEnergy">
+            <option value="grid" selected>100% National Grid</option>
+            <option value="mixed">Hybrid (Grid + 40% On-site Renewables)</option>
+            <option value="ppa">Grid + 100% Green PPA/RECs</option>
+            <option value="onsite">100% On-site Renewables + Battery</option>
+          </select>
+        </div>
+        <div class="form-group"><label>HVAC System Efficiency</label>
+          <select id="pHvac">
+            <option value="standard">Code Minimum (ASHRAE 90.1 Baseline)</option>
+            <option value="high" selected>High Efficiency (VRF / GSHP)</option>
+            <option value="passive">Passive House Certified (Minimal Active)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Refrigerant GWP Impact</label>
+          <select id="pRefrigerant">
+            <option value="high">High GWP (R-410A - 2088 GWP)</option>
+            <option value="medium" selected>Medium GWP (R-32 - 675 GWP)</option>
+            <option value="low">Low GWP (Propane/Natural - 3 GWP)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Building Envelope Performance</label>
+          <select id="pEnvelope">
+            <option value="standard">Standard Insulation / Double Glazing</option>
+            <option value="improved" selected>Improved / Low-E Glazing</option>
+            <option value="high_perf">High Performance / Triple Glazing</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- WE & Water Energy Nexus -->
+    <div class="card">
+      <div class="card-title"><div class="card-icon">💧</div> Water Efficiency (WE)</div>
+      <p class="card-desc">Municipal water treatment and hot water generation represent hidden energy penalties (Water-Energy Nexus).</p>
+      <div class="form-grid">
+        <div class="form-group"><label>Indoor Water Fixtures</label>
+          <select id="pFixtures">
+            <option value="standard">Standard Flow (EPAct Baseline)</option>
+            <option value="low_flow" selected>Low-Flow (30% Reduction)</option>
+            <option value="ultra_low">Ultra-Low / Waterless (60% Reduction)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Hot Water Generation</label>
+          <select id="pHotWater">
+            <option value="gas">Natural Gas Boiler</option>
+            <option value="electric" selected>Electric Resistance / Standard</option>
+            <option value="heat_pump">Heat Pump Water Heater (Highly Efficient)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="calculateImpact()">Generate Advanced Carbon Assessment</button>
+  </div>
+
+  <!-- RESULTS SECTION -->
+  <div id="results-section" class="results-section">
+    <div class="score-hero">
+      <div class="score-title">Lifecycle Carbon Intensity (kgCO₂e / m²)</div>
+      <div class="big-score" id="resIntensity">0</div>
+      <div class="score-unit">Over <span id="resLifeSpan">60</span> Year Lifespan</div>
+      <div class="grade-badge grade-a" id="resGrade">WorldGBC 2030 Target Aligned</div>
+      <div class="disclaimer-box">
+        <strong>CAUTION:</strong> This assessment is based on algorithmic estimates derived from user inputs and standard industry averages (ASHRAE, WorldGBC). It is not an official statement or a substitute for a formal ISO 14040 Life Cycle Assessment (LCA) performed by a certified professional.
+      </div>
+    </div>
+
+    <div class="breakdown-grid">
+      <div class="breakdown-card">
+        <div class="bc-label">Embodied Carbon</div>
+        <div class="bc-value" id="resEmbodied">0</div>
+        <div class="bc-sub">Materials & Construction</div>
+      </div>
+      <div class="breakdown-card operational">
+        <div class="bc-label">Operational Carbon</div>
+        <div class="bc-value" id="resOperational">0</div>
+        <div class="bc-sub">Energy, Refrigerants & Water</div>
+      </div>
+      <div class="breakdown-card transport">
+        <div class="bc-label">Transport Carbon</div>
+        <div class="bc-value" id="resTransport">0</div>
+        <div class="bc-sub">Commuting & Mobility</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="card-icon">💡</div> LEED Aligned Improvement Strategies</div>
+      <p class="card-desc">Actionable engineering and design interventions to lower carbon intensity and achieve LEED certification thresholds.</p>
+      <ul class="suggestion-list" id="suggestionList"></ul>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-download" onclick="exportPDF()">Download Professional PDF Report</button>
+      <button class="btn-reset" onclick="resetForm()">Start New Assessment</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   ADVANCED CARBON CALCULATION ALGORITHM
+   ═══════════════════════════════════════════════════════════════ */
+
+function calculateImpact() {
+  const area = parseFloat(document.getElementById('pArea').value) || 5000;
+  const life = parseInt(document.getElementById('pLife').value) || 60;
+  const gridFactor = parseFloat(document.getElementById('pGrid').value);
+
+  // ==========================================
+  // 1. EMBODIED CARBON (kgCO2e/m2)
+  // Baseline A1-A5 (Product & Construction)
+  // ==========================================
+  let embodiedBase = 550; // Average commercial
+  const struct = document.getElementById('pStruct').value;
+  if (struct === 'concrete_steel') embodiedBase = 650;
+  if (struct === 'steel_frame') embodiedBase = 550;
+  if (struct === 'masonry') embodiedBase = 480;
+  if (struct === 'mass_timber') embodiedBase = 250; // Sequestration + low carbon
+
+  // Envelope/Facade adjustments
+  const facade = document.getElementById('pFacade').value;
+  if (facade === 'curtainwall') embodiedBase += 80; // Aluminum/Glass high penalty
+  if (facade === 'opaque') embodiedBase -= 30;
+
+  // Concrete SCMs (Supplementary Cementitious Materials)
+  const scm = parseInt(document.getElementById('pSCM').value);
+  if (struct !== 'mass_timber') {
+    embodiedBase -= (scm * 1.2); // ~1.2 kg reduction per % SCM
+  }
+
+  // Recycled Steel
+  const steelRecycle = parseInt(document.getElementById('pSteelRecycle').value);
+  const steelRecycleBonus = (steelRecycle - 20) * 0.5; // 0.5 kg reduction per % above 20%
+  if (struct !== 'mass_timber' && struct !== 'masonry') {
+    embodiedBase -= steelRecycleBonus;
+  }
+
+  let totalEmbodied = Math.max(embodiedBase, 150) * area; // in kgCO2e
+
+  // ==========================================
+  // 2. OPERATIONAL CARBON (kgCO2e/m2/year)
+  // Baseline B6 (Operational Energy) & B1 (Refrigerants)
+  // ==========================================
+  
+  // Base EUI (kWh/m2/yr) based on Climate & Type
+  let eui = 140; // Commercial baseline
+  const pType = document.getElementById('pType').value;
+  const climate = document.getElementById('pClimate').value;
+  if (pType === 'residential') eui = 100;
+  if (pType === 'industrial') eui = 160;
+  
+  if (climate === 'hot_wet') eui += 20;
+  if (climate === 'hot_dry') eui += 35;
+  if (climate === 'mixed') eui += 0;
+  if (climate === 'cold') eui += 30;
+  if (climate === 'subarctic') eui += 55;
+
+  // HVAC Efficiency Adjustments
+  const hvac = document.getElementById('pHvac').value;
+  if (hvac === 'high') eui *= 0.78;
+  if (hvac === 'passive') eui *= 0.55;
+
+  // Envelope Performance Adjustments
+  const envelope = document.getElementById('pEnvelope').value;
+  if (envelope === 'improved') eui *= 0.90;
+  if (envelope === 'high_perf') eui *= 0.78;
+
+  // Energy Source Adjustments (Grid factor applied later)
+  const energy = document.getElementById('pEnergy').value;
+  let operationalEmissions = eui * gridFactor; // kgCO2e/m2/yr
+  if (energy === 'mixed') operationalEmissions *= 0.60;
+  if (energy === 'ppa') operationalEmissions *= 0.05; // 5% for grid backup/embodied
+  if (energy === 'onsite') operationalEmissions *= 0.02; // Near zero
+
+  // Refrigerant Leakage (B1) - Major LEED EA Credit Focus
+  // Avg system leaks ~2-3% per year. High GWP refrigerants are massive contributors.
+  let refrigerantEmissions = 5; // kgCO2e/m2/yr baseline (R-410A)
+  const refrigerant = document.getElementById('pRefrigerant').value;
+  if (refrigerant === 'high') refrigerantEmissions = 6;
+  if (refrigerant === 'medium') refrigerantEmissions = 2;
+  if (refrigerant === 'low') refrigerantEmissions = 0.1;
+  operationalEmissions += refrigerantEmissions;
+
+  // Water Energy Nexus & Hot Water
+  const fixtures = document.getElementById('pFixtures').value;
+  const hotWater = document.getElementById('pHotWater').value;
+  let waterEnergy = 8; // kWh/m2/yr for hot water & pumping
+  if (fixtures === 'low_flow') waterEnergy *= 0.7;
+  if (fixtures === 'ultra_low') waterEnergy *= 0.4;
+
+  let hotWaterFactor = gridFactor; // Default electric
+  if (hotWater === 'gas') hotWaterFactor = 0.2; // Natural gas is lower carbon per kWh than coal grid, but high vs hydro
+  if (hotWater === 'heat_pump') waterEnergy *= 0.35; // COP of ~3.0
+  
+  operationalEmissions += (waterEnergy * hotWaterFactor);
+
+  let totalOperational = operationalEmissions * area * life; // in kgCO2e
+
+  // ==========================================
+  // 3. TRANSPORT CARBON (kgCO2e/m2/year)
+  // Baseline B8 (Use Stage - Transport)
+  // ==========================================
+  let transportBase = 10; // kgCO2e/m2/yr for car-dependent suburban
+  const site = document.getElementById('pSite').value;
+  const parking = document.getElementById('pParking').value;
+  const mobility = document.getElementById('pMobility').value;
+
+  if (site === 'infill') transportBase *= 0.7;
+  if (site === 'transit') transportBase *= 0.35;
+  
+  if (parking === 'high') transportBase *= 1.2;
+  if (parking === 'reduced') transportBase *= 0.8;
+  if (parking === 'none') transportBase *= 0.5;
+
+  if (mobility === 'ev') transportBase *= 0.85;
+  if (mobility === 'full') transportBase *= 0.65;
+
+  let totalTransport = transportBase * area * life; // in kgCO2e
+
+  // ==========================================
+  // 4. TOTALS, METRICS & BENCHMARKS
+  // ==========================================
+  let totalLifecycle = totalEmbodied + totalOperational + totalTransport;
+  let intensity = totalLifecycle / area; // kgCO2e/m2 over lifespan
+  
+  // WorldGBC & RIBA 2030 Targets: <500 kgCO2e/m2 lifecycle is 2030 target. <300 is 2025 advanced.
+  let grade = 'F'; let gradeClass = 'grade-f'; let leedLevel = 'Below LEED Certification';
+  if (intensity < 600) { grade = 'D'; gradeClass = 'grade-d'; leedLevel = 'LEED Certified'; }
+  if (intensity < 900) { grade = 'C'; gradeClass = 'grade-c'; leedLevel = 'LEED Silver'; }
+  if (intensity < 1200) { grade = 'B'; gradeClass = 'grade-b'; leedLevel = 'LEED Gold'; }
+  if (intensity < 1800) { grade = 'A'; gradeClass = 'grade-a'; leedLevel = 'LEED Platinum / WorldGBC 2030 Target'; }
+
+  // ==========================================
+  // 5. DYNAMIC SUGGESTIONS
+  // ==========================================
+  let suggestions = [];
+  if (struct !== 'mass_timber') suggestions.push({ title: 'MR Credit: Evaluate Mass Timber or Hybrid Structures', text: 'Switching from concrete/steel to mass timber can reduce A1-A3 embodied carbon by 40%+ while safely sequestering carbon. Consider hybrid timber/steel cores for high-rises.' });
+  if (scm < 40 && struct !== 'mass_timber') suggestions.push({ title: 'MR Credit: Specify High SCM Concrete Mixes', text: 'Demand 40%+ Fly Ash or GGBS replacement for Portland Cement. This single specification change can slash structural embodied carbon by 20-30% with minimal cost impact.' });
+  if (refrigerant !== 'low') suggestions.push({ title: 'EA Credit: Mandate Low-GWP Refrigerants', text: 'High GWP refrigerants (R-410A) leaking at 2% annually cause immense hidden carbon. Specify R-32 or natural refrigerants (Propane/Ammonia) to drastically reduce B1 emissions.' });
+  if (energy !== 'onsite' && energy !== 'ppa') suggestions.push({ title: 'EA Credit: Secure Renewable Power', text: 'Procure a 10-year Green Power PPA or invest in on-site Solar PV + Battery. This immediately offsets the highest portion of operational B6 carbon.' });
+  if (hvac !== 'passive') suggestions.push({ title: 'EA Credit: Transition to Passive House Standards', text: 'Implement heat recovery ventilation (HRV), triple glazing, and extreme airtightness to reduce HVAC demand by up to 60%, aligning with LEED Optimize Energy Performance.' });
+  if (parking !== 'none' && parking !== 'reduced') suggestions.push({ title: 'LT Credit: Reduce Parking Capacity', text: 'Oversupplying parking encourages single-occupancy vehicle use. Reduce parking ratios below code minimums and invest in micro-mobility and transit subsidies.' });
+
+  // UPDATE UI
+  document.getElementById('resIntensity').textContent = Math.round(intensity).toLocaleString();
+  document.getElementById('resGrade').textContent = leedLevel;
+  document.getElementById('resGrade').className = 'grade-badge ' + gradeClass;
+  document.getElementById('resEmbodied').textContent = Math.round(totalEmbodied / 1000).toLocaleString() + ' tons';
+  document.getElementById('resOperational').textContent = Math.round(totalOperational / 1000).toLocaleString() + ' tons';
+  document.getElementById('resTransport').textContent = Math.round(totalTransport / 1000).toLocaleString() + ' tons';
+  document.getElementById('resLifeSpan').textContent = life;
+
+  const sugList = document.getElementById('suggestionList');
+  sugList.innerHTML = '';
+  suggestions.forEach(s => {
+    sugList.innerHTML += `<li class="suggestion-item"><div class="sug-icon">🌱</div><div class="sug-text"><h4>${s.title}</h4><p>${s.text}</p></div></li>`;
+  });
+
+  // Store Data for PDF
+  window._carbonData = { 
+    area, life, intensity, grade, leedLevel, totalEmbodied, totalOperational, totalTransport, suggestions, 
+    formData: { 
+      name: document.getElementById('pName').value || 'Unnamed Project', 
+      climate: document.getElementById('pClimate').selectedOptions[0].text, 
+      grid: document.getElementById('pGrid').selectedOptions[0].text,
+      type: document.getElementById('pType').selectedOptions[0].text, 
+      struct: document.getElementById('pStruct').selectedOptions[0].text, 
+      hvac: document.getElementById('pHvac').selectedOptions[0].text,
+      energy: document.getElementById('pEnergy').selectedOptions[0].text,
+      refrigerant: document.getElementById('pRefrigerant').selectedOptions[0].text
+    } 
+  };
+
+  document.getElementById('form-section').style.display = 'none';
+  document.getElementById('results-section').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function resetForm() {
+  document.getElementById('form-section').style.display = 'block';
+  document.getElementById('results-section').classList.remove('active');
+  window.scrollTo(0, 0);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PROFESSIONAL PDF REPORT GENERATION
+   ═══════════════════════════════════════════════════════════════ */
+function exportPDF() {
+  var d = window._carbonData;
+  if (!d) return;
+
+  var genDate = new Date().toLocaleDateString('en-GB', {day:'2-digit',month:'long',year:'numeric'});
+  var refNum = 'ADV-CO2-' + Date.now().toString(36).toUpperCase();
+
+  var sugHtml = '';
+  for (var i = 0; i < d.suggestions.length; i++) {
+    var s = d.suggestions[i];
+    sugHtml += '<div style="border-left:4px solid #22a355;padding:10px 14px;background:#eafaf1;border-radius:6px;margin-bottom:10px">' +
+      '<h4 style="margin:0 0 4px;font-size:11pt;color:#0a2e1a">' + s.title + '</h4>' +
+      '<p style="margin:0;font-size:10pt;color:#3d3830;line-height:1.4">' + s.text + '</p></div>';
+  }
+
+  var pdfHtml = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Carbon Report - ' + d.formData.name + '</title>' +
+  '<style>' +
+  '@page{size:A4;margin:16mm}' +
+  '*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}' +
+  'html,body{background:#fff!important;color:#000!important;font-family:Arial,Helvetica,sans-serif;font-size:10pt;line-height:1.5}' +
+  '.wm{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-size:72pt;font-weight:900;color:rgba(0,0,0,.035);letter-spacing:8px;text-transform:uppercase;pointer-events:none;z-index:0}' +
+  '.content{position:relative;z-index:1}' +
+  '.hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:20px}' +
+  '.hdr-left{display:flex;align-items:flex-start;gap:12px}' +
+  '.hdr-logo{width:40px;height:40px;background:#000;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#22a355;font-size:18pt;font-weight:900;flex-shrink:0}' +
+  '.hdr-co{font-size:14pt;font-weight:700;letter-spacing:.5px}' +
+  '.hdr-sub{font-size:9pt;color:#555;margin-top:2px}' +
+  '.hdr-title{font-size:16pt;font-weight:900;letter-spacing:2px;text-transform:uppercase;border:2px solid #000;padding:4px 16px;display:inline-block}' +
+  '.hdr-meta{font-size:9pt;color:#555;margin-top:6px;text-align:right}' +
+  '.score-box{display:flex;gap:16px;margin-bottom:24px}' +
+  '.score-card{flex:1;border:2px solid #0a2e1a;border-radius:8px;padding:16px;text-align:center}' +
+  '.score-val{font-size:28pt;font-weight:700;color:#0a2e1a}' +
+  '.score-lbl{font-size:9pt;color:#555;text-transform:uppercase;letter-spacing:.5px}' +
+  '.caution{border:2px dashed #d63b3b;border-radius:8px;padding:12px;background:#fdeaea;text-align:center;margin-bottom:16px}' +
+  '.caution-txt{font-size:10pt;font-weight:700;color:#d63b3b}' +
+  '.caution-sub{font-size:8pt;color:#7a7268;margin-top:4px}' +
+  '.print-caution{border:2px dashed #22a355;border-radius:8px;padding:12px;background:#eafaf1;text-align:center;margin-bottom:20px}' +
+  '.print-txt{font-size:10pt;font-weight:700;color:#145a30}' +
+  'table{width:100%;border-collapse:collapse;font-size:10pt;margin-bottom:16px}' +
+  'th{text-align:left;padding:8px;background:#0a2e1a!important;color:#fff!important;font-size:8pt;letter-spacing:.5px;text-transform:uppercase}' +
+  'td{padding:6px 8px;border-bottom:1px solid #eee}' +
+  '.ftr{position:fixed;bottom:0;left:0;right:0;padding:6px 16mm;border-top:1px solid #ccc;display:flex;justify-content:space-between;font-size:8pt;color:#666;background:#fff!important}' +
+  '.ftr-b{font-weight:700;color:#000}' +
+  '@media print{html,body{background:#fff!important;color:#000!important}th{background:#0a2e1a!important;color:#fff!important}.caution,.print-caution,.score-card{background:#eafaf1!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.ftr{background:#fff!important}}' +
+  '</style></head><body>' +
+
+  '<div class="wm">PRODIFY</div><div class="content">' +
+
+  '<div class="hdr"><div class="hdr-left"><div class="hdr-logo">P</div><div><div class="hdr-co">Pre-Construction Carbon Impact Report</div><div class="hdr-sub">Advanced LEED v4.1 Aligned Assessment - Prodify Green</div></div></div><div style="text-align:right"><div class="hdr-title">REPORT</div><div class="hdr-meta">Ref: <b>' + refNum + '</b><br>Date: <b>' + genDate + '</b></div></div></div>' +
+
+  '<div class="print-caution"><div class="print-txt">GO GREEN, THINK GREEN: Please consider the environment before printing this document.</div></div>' +
+
+  '<div class="caution"><div class="caution-txt">CAUTION: ESTIMATION DISCLAIMER</div><div class="caution-sub">This report is generated based on user-provided answers and standard industry averages (ASHRAE, WorldGBC, LEED). It calculates A1-B8 lifecycle modules. It is NOT an official statement, certification, or a substitute for a professional ISO 14040 Life Cycle Assessment (LCA) performed by a qualified engineer.</div></div>' +
+
+  '<div style="border:1px solid #0a2e1a;border-radius:8px;padding:12px 16px;margin-bottom:20px"><div style="font-size:8pt;font-weight:700;text-transform:uppercase;letter-spacing:1px;background:#0a2e1a;color:#fff;padding:4px 8px;margin:-12px -16px 12px;border-radius:8px 8px 0 0">Project Parameters</div><table><tr><td style="width:120px;font-weight:600">Project Name:</td><td>' + d.formData.name + '</td><td style="width:120px;font-weight:600">Project Type:</td><td>' + d.formData.type + '</td></tr><tr><td style="font-weight:600">Climate Zone:</td><td>' + d.formData.climate + '</td><td style="font-weight:600">Gross Floor Area:</td><td>' + d.area.toLocaleString() + ' m\u00B2</td></tr><tr><td style="font-weight:600">Grid Carbon:</td><td>' + d.formData.grid + '</td><td style="font-weight:600">Primary Structure:</td><td>' + d.formData.struct + '</td></tr></table></div>' +
+
+  '<div class="score-box"><div class="score-card"><div class="score-val">' + Math.round(d.intensity).toLocaleString() + '</div><div class="score-lbl">Lifecycle Carbon Intensity (kgCO2e/m\u00B2)</div></div><div class="score-card"><div class="score-val" style="font-size:16pt;color:' + (d.grade==='A'||d.grade==='B'?'#22a355':d.grade==='C'?'#c8982a':'#d63b3b') + '">' + d.leedLevel + '</div><div class="score-lbl">Estimated LEED Alignment / WorldGBC Target</div></div></div>' +
+
+  '<h3 style="font-size:12pt;margin-bottom:8px;border-bottom:2px solid #0a2e1a;padding-bottom:4px">Lifecycle Carbon Breakdown (' + d.life + ' Years)</h3><table><thead><tr><th>Emission Module</th><th style="text-align:center">Total Tons CO2e</th><th style="text-align:center">% of Total</th></tr></thead><tbody>' +
+  '<tr><td>A1-A5: Embodied Carbon (Materials/Construction)</td><td style="text-align:center">' + Math.round(d.totalEmbodied/1000).toLocaleString() + '</td><td style="text-align:center">' + Math.round((d.totalEmbodied/(d.totalEmbodied+d.totalOperational+d.totalTransport))*100) + '%</td></tr>' +
+  '<tr><td>B1+B6: Operational Carbon (Energy/Refrigerants)</td><td style="text-align:center">' + Math.round(d.totalOperational/1000).toLocaleString() + '</td><td style="text-align:center">' + Math.round((d.totalOperational/(d.totalEmbodied+d.totalOperational+d.totalTransport))*100) + '%</td></tr>' +
+  '<tr><td>B8: Transport Carbon (Commuting/Mobility)</td><td style="text-align:center">' + Math.round(d.totalTransport/1000).toLocaleString() + '</td><td style="text-align:center">' + Math.round((d.totalTransport/(d.totalEmbodied+d.totalOperational+d.totalTransport))*100) + '%</td></tr>' +
+  '</tbody></table>' +
+
+  '<h3 style="font-size:12pt;margin-bottom:8px;border-bottom:2px solid #0a2e1a;padding-bottom:4px;margin-top:24px">Engineering & LEED Improvement Strategies</h3>' + sugHtml +
+
+  '</div>' + /* /content */
+  '<div class="ftr"><span>Generated by <span class="ftr-b">Prodify</span> - Go Green, Think Green &nbsp;|&nbsp; ' + d.formData.name + '</span><span>' + refNum + ' &nbsp;|&nbsp; ' + genDate + '</span></div>' +
+
+  '<script>setTimeout(function(){window.print();},500);<\/script>' +
+  '</body></html>';
+
+  var w = window.open('', '_blank');
+  if (!w) { alert('Pop-up blocked! Please allow pop-ups for this site to generate the PDF.'); return; }
+  w.document.write(pdfHtml);
+  w.document.close();
+}
+</script>
+</body>
+</html>
