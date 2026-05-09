@@ -2,594 +2,1944 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prodify | Green - Advanced Carbon Estimator</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Prodify Green — LEED AP BD+C Mock Exam</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-  :root {
-    --green-900: #0a2e1a; --green-800: #0f3d22; --green-700: #145a30; --green-600: #1a7a40;
-    --green-500: #22a355; --green-400: #3dbf6e; --green-100: #d0f0dc; --green-50: #eafaf1;
-    --gold: #c8982a; --sand: #f8f4ed;
-    --text-dark: #1a1814; --text-mid: #3d3830; --text-light: #7a7268; --white: #ffffff;
-    --red-500: #d63b3b; --red-50: #fdeaea; --blue-500: #2b6cb0; --blue-50: #ebf4ff;
-    --amber-500: #b7791f;
-    --shadow-md: 0 4px 16px rgba(10,46,26,.12); --radius: 12px; --radius-sm: 8px; --radius-lg: 20px;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--sand); color: var(--text-dark); min-height: 100vh; }
+:root{
+  --ink:#0e1117;--ink2:#2a3142;--ink3:#52617a;--ink4:#8a9ab5;--ink5:#c4cdd9;
+  --paper:#f8f9fc;--paper2:#f0f2f7;--paper3:#e6eaf2;
+  --green:#1a6b3c;--green2:#2d9458;--green3:#48c47a;--green4:#e6f7ed;--green5:#d0f0df;
+  --amber:#8a5c00;--amber2:#c27f00;--amber3:#f0a500;--amber4:#fdf3e0;
+  --red:#8b1a1a;--red2:#c42b2b;--red3:#f25252;--red4:#fde8e8;
+  --blue:#0d4a8c;--blue2:#1a70cc;--blue3:#52a0f0;--blue4:#e8f2fc;
+  --gold:#8a6800;--gold2:#c8980a;--gold3:#f5c842;--gold4:#fdf7e0;
+  --serif:'Instrument Serif',serif;
+  --sans:'Instrument Sans',sans-serif;
+  --mono:'Roboto Mono',monospace;
+  --r:10px;--r-sm:6px;--r-lg:16px;
+  --shadow:0 1px 4px rgba(14,17,23,.08),0 4px 16px rgba(14,17,23,.06);
+  --shadow2:0 2px 8px rgba(14,17,23,.1),0 8px 32px rgba(14,17,23,.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);min-height:100vh;overflow-x:hidden}
 
-  .site-header {
-    background: var(--green-900); color: var(--white); padding: 0 40px;
-    display: flex; align-items: center; justify-content: space-between;
-    height: 64px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,.3);
-  }
-  .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-  .logo-box { width: 36px; height: 36px; background: #000; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900; color: var(--green-400); }
-  .logo-text { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--white); line-height: 1.1; }
-  .logo-text span { display: block; font-size: 11px; font-family: 'DM Sans', sans-serif; color: var(--green-300); font-weight: 300; letter-spacing: .5px; }
-  .header-badge { background: var(--green-500); color: var(--white); font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 99px; }
+/* ── scrollbar ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--paper2)}
+::-webkit-scrollbar-thumb{background:var(--ink5);border-radius:2px}
 
-  .main-container { max-width: 1000px; margin: 0 auto; padding: 40px 24px 80px; }
-  .hero-section { text-align: center; margin-bottom: 48px; }
-  .hero-tag { display: inline-block; background: var(--green-100); color: var(--green-800); font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 99px; margin-bottom: 16px; }
-  .hero-title { font-family: 'DM Serif Display', serif; font-size: clamp(28px, 4vw, 42px); color: var(--green-900); margin-bottom: 12px; }
-  .hero-sub { font-size: 16px; color: var(--text-light); max-width: 700px; margin: 0 auto; line-height: 1.6; }
+/* ── PAGE SYSTEM ── */
+.pg{display:none;min-height:100vh}
+.pg.active{display:block}
 
-  .card { background: var(--white); border-radius: var(--radius-lg); padding: 36px 40px; box-shadow: var(--shadow-md); margin-bottom: 24px; border: 1px solid rgba(10,46,26,.06); }
-  .card-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--green-900); margin-bottom: 6px; display: flex; align-items: center; gap: 12px; }
-  .card-desc { font-size: 14px; color: var(--text-light); margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
-  .card-icon { width: 40px; height: 40px; background: var(--green-50); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--green-600); }
+/* ─── HEADER ─── */
+header{
+  position:sticky;top:0;z-index:200;
+  height:58px;
+  background:rgba(248,249,252,.96);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--paper3);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-leaf{
+  width:30px;height:30px;border-radius:50% 50% 50% 8px;
+  background:linear-gradient(135deg,var(--green2),var(--green3));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:13px;color:#fff;font-weight:400;
+}
+.brand-name{font-size:16px;font-weight:600;color:var(--ink);letter-spacing:-.2px}
+.brand-name span{color:var(--green2)}
+.brand-tag{font-family:var(--mono);font-size:9px;color:var(--ink4);letter-spacing:.8px;display:block;text-transform:uppercase}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.cert-pill{
+  display:flex;align-items:center;gap:7px;
+  background:var(--paper2);border:1px solid var(--paper3);
+  border-radius:99px;padding:5px 12px;
+  font-family:var(--mono);font-size:10px;color:var(--ink3);
+}
+.cpill-dot{width:7px;height:7px;border-radius:50%;background:var(--ink5);transition:all .4s}
+.cpill-dot.pass{background:var(--green3);box-shadow:0 0 6px var(--green3)}
+.btn-pdf{
+  background:var(--green);color:#fff;border:none;
+  font-family:var(--mono);font-size:10px;letter-spacing:.5px;text-transform:uppercase;
+  padding:7px 16px;border-radius:var(--r-sm);cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;gap:6px;
+}
+.btn-pdf:hover{background:var(--green2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(26,107,60,.3)}
 
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .form-group { margin-bottom: 0; display: flex; flex-direction: column; }
-  .form-group.full-width { grid-column: 1 / -1; }
-  .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-mid); letter-spacing: .4px; text-transform: uppercase; margin-bottom: 8px; }
-  .form-group input, .form-group select {
-    width: 100%; padding: 12px 16px; border: 1.5px solid #e0dbd4; border-radius: var(--radius-sm);
-    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text-dark); background: var(--sand); outline: none; transition: border-color .2s, box-shadow .2s; appearance: none;
-  }
-  .form-group select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237a7268' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
-  .form-group input:focus, .form-group select:focus { border-color: var(--green-500); box-shadow: 0 0 0 3px rgba(34,163,85,.12); background: var(--white); }
+/* ─── LANDING HERO ─── */
+.hero{
+  background:linear-gradient(160deg,var(--ink) 0%,var(--ink2) 60%,#1a2e4a 100%);
+  color:#fff;padding:72px 40px 64px;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 70% 40%,rgba(72,196,122,.08),transparent 60%),
+             radial-gradient(ellipse at 20% 80%,rgba(26,108,60,.12),transparent 50%);
+  pointer-events:none;
+}
+.hero-grid{
+  display:grid;grid-template-columns:1fr 340px;gap:56px;align-items:end;
+  max-width:1100px;margin:0 auto;position:relative;z-index:1;
+}
+.hero-kicker{
+  font-family:var(--mono);font-size:10px;color:var(--green3);
+  letter-spacing:2px;text-transform:uppercase;
+  display:flex;align-items:center;gap:10px;margin-bottom:20px;
+}
+.hero-kicker::after{content:'';width:32px;height:1px;background:var(--green3)}
+.hero-h1{
+  font-family:var(--serif);font-size:clamp(38px,5vw,60px);
+  line-height:1.06;letter-spacing:-.5px;margin-bottom:18px;color:#fff;
+}
+.hero-h1 em{font-style:italic;color:var(--green3)}
+.hero-sub{font-size:15px;font-weight:400;color:rgba(255,255,255,.6);line-height:1.75;max-width:520px;margin-bottom:32px}
+.stat-row{display:flex;gap:24px;flex-wrap:wrap}
+.stat{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:6px}
+.stat strong{font-family:var(--sans);font-size:17px;font-weight:600;color:#fff}
 
-  .btn-primary { width: 100%; padding: 16px; background: var(--green-600); color: var(--white); border: none; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600; cursor: pointer; transition: background .2s; margin-top: 12px; }
-  .btn-primary:hover { background: var(--green-700); }
+/* ─── REGISTRATION CARD ─── */
+.reg-card{
+  background:#fff;border-radius:var(--r-lg);padding:30px;
+  box-shadow:var(--shadow2);
+}
+.rc-h{font-size:18px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.rc-sub{font-size:12px;color:var(--ink4);margin-bottom:22px}
+.fld label{display:block;font-family:var(--mono);font-size:9px;font-weight:500;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
+.fld{margin-bottom:14px}
+.fld input,.fld select{
+  width:100%;background:var(--paper);border:1.5px solid var(--paper3);
+  color:var(--ink);font-family:var(--sans);font-size:13px;
+  padding:9px 12px;border-radius:var(--r-sm);outline:none;transition:border-color .2s;
+}
+.fld input:focus,.fld select:focus{border-color:var(--green2)}
+.fld input::placeholder{color:var(--ink5)}
+.fld select option{background:#fff}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.mode-card{
+  border:2px solid var(--paper3);border-radius:var(--r-sm);
+  padding:11px 10px;cursor:pointer;transition:all .15s;text-align:center;background:#fff;
+}
+.mode-card:hover{border-color:var(--green3);background:var(--green4)}
+.mode-card.on{border-color:var(--green2);background:var(--green4)}
+.mode-icon{font-size:18px;margin-bottom:4px}
+.mode-name{font-size:11px;font-weight:600;color:var(--ink)}
+.mode-desc{font-size:9px;color:var(--ink4);font-family:var(--mono)}
+.btn-start{
+  width:100%;padding:13px;background:var(--green);color:#fff;border:none;
+  font-family:var(--sans);font-size:14px;font-weight:600;
+  border-radius:var(--r-sm);cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-start:hover{background:var(--green2);transform:translateY(-1px);box-shadow:0 6px 16px rgba(26,107,60,.35)}
 
-  .results-section { display: none; }
-  .results-section.active { display: block; }
-  
-  .score-hero { background: linear-gradient(135deg, var(--green-900), var(--green-700)); border-radius: var(--radius-lg); padding: 48px; color: var(--white); text-align: center; margin-bottom: 24px; overflow: hidden; }
-  .score-title { font-family: 'DM Serif Display', serif; font-size: 24px; margin-bottom: 24px; opacity: 0.9; }
-  .big-score { font-size: 64px; font-weight: 700; line-height: 1; margin-bottom: 8px; }
-  .score-unit { font-size: 18px; opacity: 0.7; margin-bottom: 24px; }
-  .grade-badge { display: inline-block; padding: 8px 24px; border-radius: 99px; font-size: 16px; font-weight: 700; margin-bottom: 16px; }
-  .grade-a { background: var(--green-400); color: var(--green-900); }
-  .grade-b { background: #81C784; color: var(--green-900); }
-  .grade-c { background: var(--gold); color: var(--green-900); }
-  .grade-d { background: var(--amber-500); color: var(--white); }
-  .grade-f { background: var(--red-500); color: var(--white); }
-  .disclaimer-box { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: var(--radius-sm); padding: 12px; font-size: 12px; color: rgba(255,255,255,.8); line-height: 1.5; max-width: 700px; margin: 0 auto; }
+/* ─── FEATURES STRIP ─── */
+.features{padding:56px 40px;max-width:1100px;margin:0 auto}
+.features h2{font-family:var(--serif);font-size:32px;text-align:center;color:var(--ink);margin-bottom:8px}
+.features-sub{text-align:center;font-size:13px;color:var(--ink3);margin-bottom:36px}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.feat{background:#fff;border-radius:var(--r);padding:20px;box-shadow:var(--shadow);border:1px solid var(--paper3)}
+.feat-icon{width:38px;height:38px;border-radius:var(--r-sm);background:var(--green4);display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:12px}
+.feat h3{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:5px}
+.feat p{font-size:12px;color:var(--ink3);line-height:1.6}
 
-  .breakdown-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-  .breakdown-card { background: var(--white); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow-md); border-top: 4px solid var(--green-500); text-align: center; }
-  .breakdown-card.operational { border-top-color: var(--blue-500); }
-  .breakdown-card.transport { border-top-color: var(--amber-500); }
-  .bc-label { font-size: 12px; color: var(--text-light); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
-  .bc-value { font-size: 24px; font-weight: 700; color: var(--text-dark); }
-  .bc-sub { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+/* ─── EXAM LAYOUT ─── */
+.exam-wrap{display:grid;grid-template-columns:264px 1fr;min-height:calc(100vh - 58px)}
 
-  .suggestion-list { list-style: none; }
-  .suggestion-item { padding: 16px; border-bottom: 1px solid #eee; display: flex; gap: 16px; align-items: flex-start; }
-  .suggestion-item:last-child { border-bottom: none; }
-  .sug-icon { width: 32px; height: 32px; background: var(--green-50); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--green-600); flex-shrink: 0; font-size: 14px; }
-  .sug-text h4 { font-size: 14px; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; }
-  .sug-text p { font-size: 13px; color: var(--text-light); line-height: 1.5; }
+/* ─── SIDEBAR ─── */
+.sidebar{
+  background:var(--ink);color:#fff;
+  padding:20px;position:sticky;top:58px;
+  height:calc(100vh - 58px);overflow-y:auto;
+  display:flex;flex-direction:column;gap:0;
+}
+.sb-section{margin-bottom:18px}
+.sb-label{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.35);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.sb-name{font-size:14px;font-weight:600;color:#fff;margin-bottom:2px}
+.sb-mode{font-family:var(--mono);font-size:9px;color:var(--green3);letter-spacing:.5px;text-transform:uppercase}
+.timer-block{background:rgba(255,255,255,.05);border-radius:var(--r-sm);padding:14px;text-align:center;margin-bottom:16px}
+.timer-val{font-family:var(--mono);font-size:32px;font-weight:500;color:#fff;letter-spacing:2px;transition:color .3s}
+.timer-val.warn{color:#f5c842}
+.timer-val.urgent{color:var(--red3);animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+.timer-lbl{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.prog-bar{height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;margin-top:10px}
+.prog-fill{height:100%;background:var(--green3);border-radius:2px;transition:width .4s}
+.prog-text{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.3);margin-top:5px}
+.q-nav-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:16px}
+.qn{
+  aspect-ratio:1;border-radius:5px;background:rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.4);
+  cursor:pointer;transition:all .15s;border:1px solid transparent;
+}
+.qn:hover{background:rgba(255,255,255,.14)}
+.qn.curr{background:var(--green2);color:#fff;border-color:var(--green3)}
+.qn.ans{background:rgba(72,196,122,.18);color:var(--green3)}
+.qn.flag{background:rgba(240,165,0,.12);color:var(--amber3);border-color:var(--amber3)}
+.sb-legend{margin-top:auto;border-top:1px solid rgba(255,255,255,.08);padding-top:14px;display:flex;flex-direction:column;gap:5px}
+.leg-row{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.3)}
+.leg-dot{width:8px;height:8px;border-radius:2px}
 
-  .action-row { display: flex; gap: 12px; margin-top: 32px; }
-  .btn-download { flex: 1; padding: 16px; background: var(--green-700); color: var(--white); border: none; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all .2s; }
-  .btn-download:hover { background: var(--green-900); }
-  .btn-reset { padding: 16px 32px; background: var(--white); color: var(--text-mid); border: 1.5px solid #e0dbd4; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; }
+/* ─── EXAM MAIN ─── */
+.exam-main{padding:36px 40px;max-width:840px}
+.q-topbar{display:flex;align-items:center;gap:10px;margin-bottom:26px;flex-wrap:wrap}
+.q-num-tag{background:var(--green4);color:var(--green);border:1px solid var(--green5);font-family:var(--mono);font-size:10px;font-weight:500;padding:4px 10px;border-radius:99px;letter-spacing:.3px}
+.q-cat-tag{background:var(--amber4);color:var(--amber);border:1px solid #f5d48c;font-family:var(--mono);font-size:10px;padding:4px 10px;border-radius:99px;letter-spacing:.3px}
+.q-diff-tag{font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:99px;letter-spacing:.3px}
+.diff-core{background:#e8f0fe;color:#1a3a8c}
+.diff-adv{background:var(--amber4);color:var(--amber)}
+.diff-calc{background:var(--red4);color:var(--red)}
+.flag-btn{margin-left:auto;background:none;border:1.5px solid var(--paper3);border-radius:var(--r-sm);padding:5px 12px;font-family:var(--mono);font-size:10px;color:var(--ink4);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px}
+.flag-btn:hover{border-color:var(--amber3);color:var(--amber2)}
+.flag-btn.flagged{border-color:var(--amber3);color:var(--amber2);background:var(--amber4)}
+.q-text{font-family:var(--serif);font-size:22px;line-height:1.45;color:var(--ink);margin-bottom:8px;letter-spacing:-.2px}
+.q-ref{font-family:var(--mono);font-size:10px;color:var(--ink4);margin-bottom:26px;display:flex;align-items:center;gap:5px}
+.opts-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.opt{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:14px 18px;border-radius:var(--r);
+  border:2px solid var(--paper3);background:#fff;
+  cursor:pointer;transition:all .16s;
+}
+.opt:hover{border-color:var(--green3);background:var(--green4)}
+.opt.sel{border-color:var(--green2);background:var(--green4)}
+.opt.correct{border-color:var(--green2);background:var(--green4)}
+.opt.wrong{border-color:var(--red3);background:var(--red4)}
+.opt.reveal{border-color:var(--green2);background:var(--green4)}
+.opt-letter{
+  width:28px;height:28px;border-radius:50%;background:var(--paper2);
+  color:var(--ink3);font-family:var(--mono);font-size:11px;font-weight:500;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:all .16s;
+}
+.opt.sel .opt-letter{background:var(--green2);color:#fff}
+.opt.correct .opt-letter{background:var(--green2);color:#fff}
+.opt.wrong .opt-letter{background:var(--red2);color:#fff}
+.opt.reveal .opt-letter{background:var(--green2);color:#fff}
+.opt-text{font-size:14px;color:var(--ink);line-height:1.5;padding-top:4px;flex:1}
+.opt-badge{margin-left:auto;font-size:14px;flex-shrink:0;padding-top:4px}
+.exp-box{
+  background:var(--blue4);border:1px solid #b3d4f8;border-radius:var(--r);
+  padding:16px 18px;margin-bottom:22px;display:none;
+}
+.exp-box.show{display:block}
+.exp-title{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--blue);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
+.exp-text{font-size:13px;color:var(--ink2);line-height:1.65}
+.exp-std{font-family:var(--mono);font-size:10px;color:var(--ink4);margin-top:10px;border-top:1px solid #b3d4f8;padding-top:8px;line-height:1.6}
+.nav-row{display:flex;align-items:center;justify-content:space-between}
+.btn-nav{padding:11px 22px;border-radius:var(--r-sm);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;border:none}
+.btn-prev{background:var(--paper2);color:var(--ink3)}
+.btn-prev:hover{background:var(--paper3)}
+.btn-next{background:var(--green);color:#fff}
+.btn-next:hover{background:var(--green2)}
+.btn-submit{background:var(--amber2);color:#fff}
+.btn-submit:hover{background:var(--amber)}
 
-  @media (max-width: 768px) {
-    .form-grid { grid-template-columns: 1fr; }
-    .breakdown-grid { grid-template-columns: 1fr; }
-    .site-header { padding: 0 20px; }
-    .card { padding: 24px; }
-    .score-hero { padding: 32px 20px; }
-    .big-score { font-size: 48px; }
-  }
+/* ─── RESULTS ─── */
+.results-page{max-width:920px;margin:0 auto;padding:44px 24px}
+.res-hero{
+  background:linear-gradient(135deg,var(--ink) 0%,var(--ink2) 100%);
+  border-radius:var(--r-lg);padding:44px;color:#fff;text-align:center;margin-bottom:28px;position:relative;overflow:hidden;
+}
+.res-hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:180px;height:180px;background:rgba(255,255,255,.03);border-radius:50%}
+.res-name{font-family:var(--mono);font-size:11px;color:var(--green3);letter-spacing:1px;margin-bottom:10px;text-transform:uppercase}
+.res-title{font-family:var(--serif);font-size:28px;margin-bottom:24px;color:#fff;font-style:italic}
+.score-ring{width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.06);border:2px solid rgba(255,255,255,.2);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 20px}
+.score-num{font-family:var(--serif);font-size:44px;color:#fff;line-height:1;font-style:italic}
+.score-sub{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.4)}
+.grade-pill{display:inline-block;padding:7px 18px;border-radius:99px;font-family:var(--mono);font-size:11px;font-weight:500;margin-bottom:8px}
+.grade-pass{background:var(--green3);color:var(--ink)}
+.grade-fail{background:var(--red3);color:#fff}
+.res-time{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.3)}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:28px}
+.rstat{background:#fff;border-radius:var(--r);padding:18px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--paper3)}
+.rstat .rv{font-family:var(--serif);font-size:28px;font-weight:400;margin-bottom:3px;font-style:italic}
+.rstat .rl{font-size:11px;color:var(--ink4)}
+.rv-green{color:var(--green2)}.rv-red{color:var(--red2)}.rv-amber{color:var(--amber2)}.rv-blue{color:var(--blue2)}
+.section-title{font-family:var(--serif);font-size:22px;color:var(--ink);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--green4);font-style:italic}
+.cat-bar-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--paper3)}
+.cat-name{font-size:12px;font-weight:500;color:var(--ink2);min-width:180px}
+.cat-track{flex:1;height:6px;background:var(--paper3);border-radius:3px;overflow:hidden}
+.cat-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.cat-sc{font-family:var(--mono);font-size:11px;color:var(--ink4);min-width:52px;text-align:right}
+.review-item{background:#fff;border-radius:var(--r);padding:18px 22px;box-shadow:var(--shadow);border-left:4px solid var(--paper3);margin-bottom:10px;border:1px solid var(--paper3)}
+.review-item.wrong{border-left-color:var(--red2)}
+.review-item.right{border-left-color:var(--green2)}
+.rv-q{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:8px;line-height:1.5}
+.rv-ans{font-size:12px;margin-bottom:3px}
+.rv-correct{color:var(--green)}.rv-wrong{color:var(--red2);text-decoration:line-through}
+.rv-exp{font-size:11px;color:var(--ink4);margin-top:7px;border-top:1px solid var(--paper3);padding-top:7px;line-height:1.6;font-family:var(--mono)}
+.study-card{background:#fff;border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:10px;border:1px solid var(--paper3)}
+.study-card h4{font-size:14px;font-weight:600;color:var(--green);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.study-card ul{list-style:none}
+.study-card li{font-size:12px;color:var(--ink3);padding:3px 0;display:flex;gap:8px;line-height:1.5}
+.study-card li::before{content:'→';color:var(--green3);flex-shrink:0}
+.action-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;padding:28px 0}
+.btn-dl{padding:13px 26px;background:var(--green);color:#fff;border:none;border-radius:var(--r-sm);font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px}
+.btn-dl:hover{background:var(--green2);transform:translateY(-1px);box-shadow:0 6px 16px rgba(26,107,60,.3)}
+.btn-retake{padding:13px 26px;background:#fff;color:var(--green);border:2px solid var(--green3);border-radius:var(--r-sm);font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-retake:hover{background:var(--green4)}
+/* modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(14,17,23,.55);z-index:500;align-items:center;justify-content:center;min-height:100vh}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:var(--r-lg);padding:32px;max-width:400px;width:90%;text-align:center}
+.modal h3{font-family:var(--serif);font-size:20px;margin-bottom:8px;font-style:italic}
+.modal p{font-size:13px;color:var(--ink3);margin-bottom:22px;line-height:1.6}
+.modal-btns{display:flex;gap:10px;justify-content:center}
+.btn-sec{padding:10px 20px;background:var(--paper2);color:var(--ink3);border:none;border-radius:var(--r-sm);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-sec:hover{background:var(--paper3)}
+/* toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;font-family:var(--mono);font-size:11px;padding:10px 16px;border-radius:var(--r-sm);z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+/* responsive */
+@media(max-width:760px){
+  header{padding:0 16px}
+  .hero{padding:40px 16px 36px}
+  .hero-grid{grid-template-columns:1fr}
+  .exam-wrap{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;height:auto}
+  .exam-main{padding:20px 16px}
+  .features,.results-page{padding-left:16px;padding-right:16px}
+}
 </style>
 </head>
 <body>
 
-<header class="site-header">
-  <div class="logo">
-    <div class="logo-box">P</div>
-    <div class="logo-text">Prodify<span>Green - Advanced Carbon Estimator</span></div>
+<!-- HEADER -->
+<header>
+  <div class="brand">
+    <div class="brand-leaf">G</div>
+    <div>
+      <div class="brand-name">Prodify<span>Green</span></div>
+      <span class="brand-tag">LEED AP BD+C Portal</span>
+    </div>
   </div>
-  <div class="header-badge">LEED v4.1 ALIGNED</div>
+  <div class="hdr-right">
+    <div class="cert-pill"><div class="cpill-dot" id="hdr-dot"></div><span id="hdr-label">Not rated</span></div>
+    <button class="btn-pdf" onclick="genPDF()">↓ Export PDF</button>
+  </div>
 </header>
 
-<div class="main-container">
-  <div class="hero-section">
-    <div class="hero-tag">Professional Pre-Construction Assessment</div>
-    <h1 class="hero-title">Advanced Lifecycle Carbon Estimator</h1>
-    <p class="hero-sub">Utilizing ASHRAE 90.1 baselines, WorldGBC benchmarks, and LEED v4.1 credit thresholds to calculate Embodied, Operational, and Transport carbon before construction begins.</p>
-  </div>
-
-  <div id="form-section">
-    <!-- IP & Project Details -->
-    <div class="card">
-      <div class="card-title"><div class="card-icon">🏗️</div> Integrative Process & Project</div>
-      <p class="card-desc">Fundamental parameters defining scale, lifespan, and climate zone (impacts heating/cooling loads).</p>
-      <div class="form-grid">
-        <div class="form-group full-width"><label>Project Name</label><input type="text" id="pName" placeholder="e.g. Net-Zero Commercial Hub"></div>
-        <div class="form-group"><label>Climate Zone (ASHRAE)</label>
-          <select id="pClimate">
-            <option value="hot_wet">Zone 1-2: Hot & Humid (High Cooling Load)</option>
-            <option value="hot_dry">Zone 2-3: Hot & Dry (Extreme Cooling Load)</option>
-            <option value="mixed" selected>Zone 4: Mixed Humid (Balanced Heating/Cooling)</option>
-            <option value="cold">Zone 5-6: Cold (High Heating Load)</option>
-            <option value="subarctic">Zone 7-8: Subarctic (Extreme Heating Load)</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Grid Carbon Intensity</label>
-          <select id="pGrid">
-            <option value="0.25">Clean Grid (Hydro/Nuclear - 0.25 kgCO2/kWh)</option>
-            <option value="0.45" selected>Average Grid (Mixed Sources - 0.45 kgCO2/kWh)</option>
-            <option value="0.75">Fossil Grid (Coal/Gas Heavy - 0.75 kgCO2/kWh)</option>
-            <option value="0.90">Diesel/Generator Grid (0.90 kgCO2/kWh)</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Project Type</label>
-          <select id="pType">
-            <option value="commercial">Commercial Office</option>
-            <option value="residential">Residential Multi-Family</option>
-            <option value="industrial">Industrial / Warehouse</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Total Gross Floor Area (m²)</label><input type="number" id="pArea" value="5000"></div>
-        <div class="form-group"><label>Building Lifespan (Years)</label><input type="number" id="pLife" value="60"></div>
-      </div>
-    </div>
-
-    <!-- LT & Site -->
-    <div class="card">
-      <div class="card-title"><div class="card-icon">📍</div> Location & Transportation (LT)</div>
-      <p class="card-desc">Site selection and mobility infrastructure heavily impact Scope 3 transport emissions over the lifecycle.</p>
-      <div class="form-grid">
-        <div class="form-group"><label>Site Development Type</label>
-          <select id="pSite">
-            <option value="greenfield">Greenfield (Undeveloped Land)</option>
-            <option value="infill" selected>Urban Infill / Brownfield</option>
-            <option value="transit">Transit-Oriented Development (TOD)</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Parking Capacity Ratio</label>
-          <select id="pParking">
-            <option value="high">High Ratio (>3 spaces per 1000 sqft)</option>
-            <option value="standard" selected>Standard Code Minimum</option>
-            <option value="reduced">Reduced (LEED LT Credit)</option>
-            <option value="none">Car-Free / Minimal Parking</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Green Mobility Infrastructure</label>
-          <select id="pMobility">
-            <option value="none">Standard Parking Only</option>
-            <option value="ev">EV Charging Stations (LEED LT Credit)</option>
-            <option value="full">EV + Bicycle + Transit Subsidies</option>
-          </select>
+<!-- PAGE: LANDING -->
+<div id="pg-land" class="pg active">
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-kicker">Official LEED v4 BD+C Reference Guide · 2013 Edition</div>
+        <h1 class="hero-h1">Ace the <em>LEED AP</em><br>BD+C Exam</h1>
+        <p class="hero-sub">100 exam-grade questions written directly from the 817-page LEED BD+C Reference Guide. Full technical depth — OPR, BOD, ASHRAE standards, EPD calculations, refrigerant metrics, and more.</p>
+        <div class="stat-row">
+          <div class="stat"><strong>100</strong>Questions</div>
+          <div class="stat"><strong>817</strong>Page source doc</div>
+          <div class="stat"><strong>9</strong>Credit categories</div>
+          <div class="stat"><strong>PDF</strong>Report</div>
         </div>
       </div>
-    </div>
-
-    <!-- MR & Embodied Carbon -->
-    <div class="card">
-      <div class="card-title"><div class="card-icon">🧱</div> Materials & Resources (MR)</div>
-      <p class="card-desc">The structural core and envelope dictate the majority of embodied carbon. Aligns with LEED MR and EPD credits.</p>
-      <div class="form-grid">
-        <div class="form-group"><label>Primary Structural System</label>
-          <select id="pStruct">
-            <option value="concrete_steel">Reinforced Concrete & Steel (High Carbon)</option>
-            <option value="steel_frame" selected>Primary Steel Frame</option>
-            <option value="masonry">Masonry / Blockwork</option>
-            <option value="mass_timber">Mass Timber / Hybrid Timber (Low Carbon)</option>
+      <!-- REGISTRATION CARD -->
+      <div class="reg-card">
+        <div class="rc-h">Start Your Mock Exam</div>
+        <div class="rc-sub">Enter details and choose exam mode</div>
+        <div class="fld"><label>Full Name</label><input type="text" id="inp-name" placeholder="e.g. Ahmed Al-Rashidi"></div>
+        <div class="fld"><label>Organisation (optional)</label><input type="text" id="inp-org" placeholder="e.g. Green Building Firm"></div>
+        <div class="fld"><label>Select Exam Mode</label></div>
+        <div class="mode-grid">
+          <div class="mode-card on" data-mode="full" onclick="pickMode(this,'full')">
+            <div class="mode-icon">📋</div>
+            <div class="mode-name">Full Exam</div>
+            <div class="mode-desc">100 Qs · 140 min</div>
+          </div>
+          <div class="mode-card" data-mode="quick" onclick="pickMode(this,'quick')">
+            <div class="mode-icon">⚡</div>
+            <div class="mode-name">Quick Test</div>
+            <div class="mode-desc">30 Qs · 45 min</div>
+          </div>
+          <div class="mode-card" data-mode="cat" onclick="pickMode(this,'cat')">
+            <div class="mode-icon">🎯</div>
+            <div class="mode-name">Category</div>
+            <div class="mode-desc">20 Qs · 1 topic</div>
+          </div>
+          <div class="mode-card" data-mode="practice" onclick="pickMode(this,'practice')">
+            <div class="mode-icon">📚</div>
+            <div class="mode-name">Practice</div>
+            <div class="mode-desc">Hints enabled</div>
+          </div>
+        </div>
+        <div class="fld" id="cat-sel-wrap" style="display:none">
+          <label>Category</label>
+          <select id="cat-sel">
+            <option value="all">All categories</option>
+            <option value="IP">Integrative Process</option>
+            <option value="LT">Location & Transportation</option>
+            <option value="SS">Sustainable Sites</option>
+            <option value="WE">Water Efficiency</option>
+            <option value="EA">Energy & Atmosphere</option>
+            <option value="MR">Materials & Resources</option>
+            <option value="EQ">Indoor Environmental Quality</option>
+            <option value="IN">Innovation</option>
+            <option value="RP">Regional Priority</option>
           </select>
         </div>
-        <div class="form-group"><label>Concrete Cement Replacement (SCMs)</label>
-          <select id="pSCM">
-            <option value="0">None (100% Portland Cement)</option>
-            <option value="25" selected>Moderate (25% Fly Ash/Slag)</option>
-            <option value="40">High (40%+ SCMs - LEED MR Credit)</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Building Envelope / Facade</label>
-          <select id="pFacade">
-            <option value="curtainwall">Full Curtainwall / High Glazing (High Carbon)</option>
-            <option value="mixed" selected>Mixed Glazing & Opaque Panels</option>
-            <option value="opaque">Mostly Opaque / High-Performance Wall</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Recycled Steel Content</label>
-          <select id="pSteelRecycle">
-            <option value="20">Standard (20% Recycled)</option>
-            <option value="60">High (60%+ Recycled - LEED MR Credit)</option>
-            <option value="90">Ultra-High (Electric Arc Furnace 90%+)</option>
-          </select>
-        </div>
+        <button class="btn-start" onclick="startExam()">Begin Exam →</button>
       </div>
     </div>
-
-    <!-- EA & Operational Carbon -->
-    <div class="card">
-      <div class="card-title"><div class="card-icon">⚡</div> Energy & Atmosphere (EA)</div>
-      <p class="card-desc">Operational energy and refrigerants are the largest contributors to lifecycle carbon. Aligns with ASHRAE 90.1 baselines.</p>
-      <div class="form-grid">
-        <div class="form-group"><label>Primary Energy Source</label>
-          <select id="pEnergy">
-            <option value="grid" selected>100% National Grid</option>
-            <option value="mixed">Hybrid (Grid + 40% On-site Renewables)</option>
-            <option value="ppa">Grid + 100% Green PPA/RECs</option>
-            <option value="onsite">100% On-site Renewables + Battery</option>
-          </select>
-        </div>
-        <div class="form-group"><label>HVAC System Efficiency</label>
-          <select id="pHvac">
-            <option value="standard">Code Minimum (ASHRAE 90.1 Baseline)</option>
-            <option value="high" selected>High Efficiency (VRF / GSHP)</option>
-            <option value="passive">Passive House Certified (Minimal Active)</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Refrigerant GWP Impact</label>
-          <select id="pRefrigerant">
-            <option value="high">High GWP (R-410A - 2088 GWP)</option>
-            <option value="medium" selected>Medium GWP (R-32 - 675 GWP)</option>
-            <option value="low">Low GWP (Propane/Natural - 3 GWP)</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Building Envelope Performance</label>
-          <select id="pEnvelope">
-            <option value="standard">Standard Insulation / Double Glazing</option>
-            <option value="improved" selected>Improved / Low-E Glazing</option>
-            <option value="high_perf">High Performance / Triple Glazing</option>
-          </select>
-        </div>
-      </div>
+  </section>
+  <section class="features">
+    <h2>Built from the BD+C Reference Guide</h2>
+    <p class="features-sub">Every question traces back to a specific page, standard, or threshold in the official LEED v4 BD+C Reference Guide.</p>
+    <div class="feat-grid">
+      <div class="feat"><div class="feat-icon">📐</div><h3>Technical precision</h3><p>Questions on OPR vs BOD, LCGWP+LCODP calculations, ASHRAE 90.1 simulation, functional testing sampling rates, and more.</p></div>
+      <div class="feat"><div class="feat-icon">🔗</div><h3>Reference-linked answers</h3><p>Every explanation cites the exact section, page range, and standard from the BD+C Reference Guide — so you know exactly where to study.</p></div>
+      <div class="feat"><div class="feat-icon">⚖️</div><h3>3 difficulty tiers</h3><p>Core knowledge, advanced application, and calculation questions — matching the real LEED AP BD+C exam weight distribution.</p></div>
+      <div class="feat"><div class="feat-icon">📊</div><h3>Category analytics</h3><p>Instant performance breakdown by all 9 credit categories — identify exactly where to focus your final study hours.</p></div>
+      <div class="feat"><div class="feat-icon">📄</div><h3>5-page PDF report</h3><p>Score, category performance, all wrong answers with explanations, and a personalised study plan — download and keep.</p></div>
+      <div class="feat"><div class="feat-icon">🏗️</div><h3>BD+C specific</h3><p>Healthcare-only credits, Core & Shell rules, energy modelling requirements, commissioning authority qualifications — BD+C depth, not just GA level.</p></div>
     </div>
+  </section>
+</div>
 
-    <!-- WE & Water Energy Nexus -->
-    <div class="card">
-      <div class="card-title"><div class="card-icon">💧</div> Water Efficiency (WE)</div>
-      <p class="card-desc">Municipal water treatment and hot water generation represent hidden energy penalties (Water-Energy Nexus).</p>
-      <div class="form-grid">
-        <div class="form-group"><label>Indoor Water Fixtures</label>
-          <select id="pFixtures">
-            <option value="standard">Standard Flow (EPAct Baseline)</option>
-            <option value="low_flow" selected>Low-Flow (30% Reduction)</option>
-            <option value="ultra_low">Ultra-Low / Waterless (60% Reduction)</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Hot Water Generation</label>
-          <select id="pHotWater">
-            <option value="gas">Natural Gas Boiler</option>
-            <option value="electric" selected>Electric Resistance / Standard</option>
-            <option value="heat_pump">Heat Pump Water Heater (Highly Efficient)</option>
-          </select>
-        </div>
+<!-- PAGE: EXAM -->
+<div id="pg-exam" class="pg">
+  <div class="exam-wrap">
+    <aside class="sidebar">
+      <div class="sb-section">
+        <div class="sb-label">Candidate</div>
+        <div class="sb-name" id="sb-name">—</div>
+        <div class="sb-mode" id="sb-mode">LEED AP BD+C · Full Exam</div>
       </div>
-    </div>
-
-    <button class="btn-primary" onclick="calculateImpact()">Generate Advanced Carbon Assessment</button>
-  </div>
-
-  <!-- RESULTS SECTION -->
-  <div id="results-section" class="results-section">
-    <div class="score-hero">
-      <div class="score-title">Lifecycle Carbon Intensity (kgCO₂e / m²)</div>
-      <div class="big-score" id="resIntensity">0</div>
-      <div class="score-unit">Over <span id="resLifeSpan">60</span> Year Lifespan</div>
-      <div class="grade-badge grade-a" id="resGrade">WorldGBC 2030 Target Aligned</div>
-      <div class="disclaimer-box">
-        <strong>CAUTION:</strong> This assessment is based on algorithmic estimates derived from user inputs and standard industry averages (ASHRAE, WorldGBC). It is not an official statement or a substitute for a formal ISO 14040 Life Cycle Assessment (LCA) performed by a certified professional.
+      <div class="timer-block">
+        <div class="timer-lbl">Time Remaining</div>
+        <div class="timer-val" id="timer-val">02:20:00</div>
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+        <div class="prog-text"><span id="prog-ans">0 answered</span><span id="prog-total">of 100</span></div>
       </div>
-    </div>
-
-    <div class="breakdown-grid">
-      <div class="breakdown-card">
-        <div class="bc-label">Embodied Carbon</div>
-        <div class="bc-value" id="resEmbodied">0</div>
-        <div class="bc-sub">Materials & Construction</div>
+      <div class="sb-label">Questions</div>
+      <div class="q-nav-grid" id="q-nav-grid"></div>
+      <div class="sb-legend">
+        <div class="leg-row"><span class="leg-dot" style="background:rgba(255,255,255,.12)"></span>Not attempted</div>
+        <div class="leg-row"><span class="leg-dot" style="background:rgba(72,196,122,.25)"></span>Answered</div>
+        <div class="leg-row"><span class="leg-dot" style="background:var(--green2)"></span>Current</div>
+        <div class="leg-row"><span class="leg-dot" style="background:rgba(240,165,0,.25);border:1px solid var(--amber3)"></span>Flagged</div>
       </div>
-      <div class="breakdown-card operational">
-        <div class="bc-label">Operational Carbon</div>
-        <div class="bc-value" id="resOperational">0</div>
-        <div class="bc-sub">Energy, Refrigerants & Water</div>
+    </aside>
+    <main class="exam-main">
+      <div class="q-topbar">
+        <span class="q-num-tag" id="q-num-tag">Q 1 / 100</span>
+        <span class="q-cat-tag" id="q-cat-tag">Energy & Atmosphere</span>
+        <span class="q-diff-tag diff-core" id="q-diff-tag">Core</span>
+        <button class="flag-btn" id="flag-btn" onclick="toggleFlag()">🚩 Flag</button>
       </div>
-      <div class="breakdown-card transport">
-        <div class="bc-label">Transport Carbon</div>
-        <div class="bc-value" id="resTransport">0</div>
-        <div class="bc-sub">Commuting & Mobility</div>
+      <div class="q-text" id="q-text">Loading…</div>
+      <div class="q-ref" id="q-ref">📖 Reference</div>
+      <ul class="opts-list" id="opts-list"></ul>
+      <div class="exp-box" id="exp-box">
+        <div class="exp-title">Explanation</div>
+        <div class="exp-text" id="exp-text"></div>
+        <div class="exp-std" id="exp-std"></div>
       </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title"><div class="card-icon">💡</div> LEED Aligned Improvement Strategies</div>
-      <p class="card-desc">Actionable engineering and design interventions to lower carbon intensity and achieve LEED certification thresholds.</p>
-      <ul class="suggestion-list" id="suggestionList"></ul>
-    </div>
-
-    <div class="action-row">
-      <button class="btn-download" onclick="exportPDF()">Download Professional PDF Report</button>
-      <button class="btn-reset" onclick="resetForm()">Start New Assessment</button>
-    </div>
+      <div class="nav-row">
+        <button class="btn-nav btn-prev" onclick="goQ(-1)">← Previous</button>
+        <button class="btn-nav btn-next" id="btn-next" onclick="nextOrSubmit()">Next →</button>
+      </div>
+    </main>
   </div>
 </div>
 
+<!-- PAGE: RESULTS -->
+<div id="pg-results" class="pg">
+  <div class="results-page" id="results-content"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal"><div class="modal">
+  <h3>Submit Exam?</h3>
+  <p id="modal-msg">Ready to submit and see your results?</p>
+  <div class="modal-btns">
+    <button class="btn-sec" onclick="closeModal()">Review Answers</button>
+    <button class="btn-start" style="width:auto;padding:10px 20px" onclick="finishExam()">Submit</button>
+  </div>
+</div></div>
+<div class="toast" id="toast"></div>
+
 <script>
-/* ═══════════════════════════════════════════════════════════════
-   ADVANCED CARBON CALCULATION ALGORITHM
-   ═══════════════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════
+// QUESTION BANK — 100 questions from LEED AP BD+C Ref Guide
+// ═══════════════════════════════════════════════════════
+// diff: 'core'|'adv'|'calc'
+// cat: code string
+// ref: page / section from 817-page document
+const QS = [
+// ─── INTEGRATIVE PROCESS ───
+{id:1,cat:'IP',catL:'Integrative Process',diff:'core',
+ q:'What is the primary purpose of the "Discovery Phase" in the LEED v4 Integrative Process?',
+ opts:['To complete all construction documentation before breaking ground','To conduct an extensive pre-design analysis of energy and water systems before schematic design begins','To commission building systems after occupancy','To perform quality assurance before final LEED submission'],
+ ans:1,ref:'Getting Started · p.11; IP Credit',
+ exp:'The Discovery Phase is an expansion of what is conventionally called predesign. It is the most important phase of the integrative process — projects are unlikely to meet environmental goals cost-effectively without it. Energy- and water-related research and analysis must occur before schematic design begins.',
+ std:'IP ANSI Consensus National Standard Guide 2.0 (Feb 2012)'},
 
-function calculateImpact() {
-  const area = parseFloat(document.getElementById('pArea').value) || 5000;
-  const life = parseInt(document.getElementById('pLife').value) || 60;
-  const gridFactor = parseFloat(document.getElementById('pGrid').value);
+{id:2,cat:'IP',catL:'Integrative Process',diff:'adv',
+ q:'According to the LEED BD+C Reference Guide, the "simple box" energy model is used primarily to:',
+ opts:['Satisfy the EA Prerequisite Minimum Energy Performance submission requirement','Generate a basic estimate of energy load distribution before schematic design is finalised','Validate contractor energy calculations during construction','Replace the whole-building simulation required for the Optimize Energy Performance credit'],
+ ans:1,ref:'IP Credit · Further Explanation p.43 (simple box energy modeling)',
+ exp:'The simple box energy model (also called building-massing model energy analysis) is a simplified early-stage energy model used to understand the building\'s likely distribution of energy consumption by end-use. It informs the team about heating and cooling loads before the schematic design is finalised — it does NOT replace the full ASHRAE 90.1-2010 Appendix G simulation required for EA credits.',
+ std:'IP ANSI Standard Guide 2.0; EA Prerequisite Minimum Energy Performance'},
 
-  // ==========================================
-  // 1. EMBODIED CARBON (kgCO2e/m2)
-  // Baseline A1-A5 (Product & Construction)
-  // ==========================================
-  let embodiedBase = 550; // Average commercial
-  const struct = document.getElementById('pStruct').value;
-  if (struct === 'concrete_steel') embodiedBase = 650;
-  if (struct === 'steel_frame') embodiedBase = 550;
-  if (struct === 'masonry') embodiedBase = 480;
-  if (struct === 'mass_timber') embodiedBase = 250; // Sequestration + low carbon
+{id:3,cat:'IP',catL:'Integrative Process',diff:'adv',
+ q:'The Healthcare-only Integrative Project Planning and Design Prerequisite requires a design charrette of at minimum:',
+ opts:['2 hours','4 hours','8 hours','1 full day (minimum 6 hours)'],
+ ans:1,ref:'IP Prerequisite (Healthcare) · p.37–38',
+ exp:'The prerequisite requires a minimum four-hour integrated design charrette with the project team assembled. The charrette must occur as early as practical and preferably before schematic design. Its goal is to optimise integration of green strategies across all aspects of building design, construction, and operations.',
+ std:'IP Prerequisite — Integrative Project Planning and Design (Healthcare)'},
 
-  // Envelope/Facade adjustments
-  const facade = document.getElementById('pFacade').value;
-  if (facade === 'curtainwall') embodiedBase += 80; // Aluminum/Glass high penalty
-  if (facade === 'opaque') embodiedBase -= 30;
+// ─── LOCATION & TRANSPORTATION ───
+{id:4,cat:'LT',catL:'Location & Transportation',diff:'core',
+ q:'For the Access to Quality Transit credit, what is the maximum walking distance from the main building entrance to a bus stop or streetcar stop?',
+ opts:['⅛ mile (200 m)','¼ mile (400 m)','½ mile (800 m)','1 mile (1,600 m)'],
+ ans:1,ref:'LT Credit Access to Quality Transit · p.89',
+ exp:'Bus stops, streetcar stops, and ferry terminals must be within ¼ mile (400 m) walking distance of a functional building entrance. Train stations, subway stations, and bus rapid transit stations must be within ½ mile (800 m) walking distance.',
+ std:'LT Credit — Access to Quality Transit'},
 
-  // Concrete SCMs (Supplementary Cementitious Materials)
-  const scm = parseInt(document.getElementById('pSCM').value);
-  if (struct !== 'mass_timber') {
-    embodiedBase -= (scm * 1.2); // ~1.2 kg reduction per % SCM
+{id:5,cat:'LT',catL:'Location & Transportation',diff:'adv',
+ q:'The Green Vehicles credit requires preferred parking spaces for green vehicles to provide a minimum discount of what percentage off the daily parking rate?',
+ opts:['10%','15%','20%','25%'],
+ ans:2,ref:'LT Credit Green Vehicles · p.121',
+ exp:'The credit requires that preferred parking for green vehicles be discounted by at least 20% off the full daily parking rate. Additionally, EV charging infrastructure must be provided for at least 2% of total parking capacity, and preferred parking must cover at least 5% of total parking.',
+ std:'LT Credit — Green Vehicles'},
+
+{id:6,cat:'LT',catL:'Location & Transportation',diff:'adv',
+ q:'A project site is located in an area with a floor-area ratio (FAR) of 1.5 or greater within a ¼-mile radius, AND the building footprint aligns with the site limits. This project can use which special rainwater management path?',
+ opts:['95th percentile path','98th percentile path','Zero lot line — 85th percentile path','No special path; standard 95th percentile applies'],
+ ans:2,ref:'SS Credit Rainwater Management · Further Explanation p.195',
+ exp:'Zero lot line projects qualify for the 85th percentile path (rather than 95th) when the building footprint aligns with the LEED project boundary AND the surrounding density within ¼ mile is ≥1.5 FAR. This reflects the constrained nature of dense urban sites with minimal open area to manage runoff.',
+ std:'SS Credit Rainwater Management — Path 3 Zero Lot Line'},
+
+{id:7,cat:'LT',catL:'Location & Transportation',diff:'core',
+ q:'Under LEED BD+C, prime farmland, floodplains, threatened/endangered species habitat, wetlands, and parkland are all examples of:',
+ opts:['Previously developed sites that earn High Priority Site points','Sensitive lands that must be avoided under the Sensitive Land Protection credit','Brownfield sites eligible for remediation credits','Sites that automatically qualify for LEED ND certification'],
+ ans:1,ref:'LT Credit Sensitive Land Protection · p.63',
+ exp:'The Sensitive Land Protection credit prohibits development on sites classified as prime farmland (USDA CFR Title 7 Section 657.5), floodplains (100-year FEMA flood zones), threatened or endangered species habitat, wetlands within 100 ft of water bodies, and public parkland. Development must stay ≥100 ft from water bodies and ≥50 ft from wetlands.',
+ std:'USDA CFR Title 7 Vol 6 Parts 400-699 Section 657.5'},
+
+{id:8,cat:'LT',catL:'Location & Transportation',diff:'adv',
+ q:'When calculating the FAR (floor-area ratio) for the Surrounding Density credit, which of the following is EXCLUDED?',
+ opts:['Below-grade floor area','Mechanical penthouse space','Structured parking','Ground-floor retail space'],
+ ans:2,ref:'Getting Started · Density definitions p.16',
+ exp:'FAR measures the density of nonresidential land use as total nonresidential building floor area divided by total buildable land area. Structured parking is explicitly excluded from FAR calculations. Buildable land excludes public rights-of-way and land excluded by codified law, but includes voluntarily set-aside land.',
+ std:'LT Credit Surrounding Density and Diverse Uses'},
+
+// ─── SUSTAINABLE SITES ───
+{id:9,cat:'SS',catL:'Sustainable Sites',diff:'core',
+ q:'The Construction Activity Pollution Prevention prerequisite (SS Prereq 1) is classified as which type of credit?',
+ opts:['Design phase credit — submitted with design documentation','Construction phase credit — submitted after construction completion','Both design and construction phase','Operations phase credit'],
+ ans:1,ref:'Getting Started Quick Reference Table · p.20',
+ exp:'SS Prerequisite 1 Construction Activity Pollution Prevention is the only prerequisite in LEED BD+C designated as a Construction (C) phase credit. All other prerequisites and the majority of credits are Design (D) phase. This distinction is important — it is submitted based on activities during construction, not just design intent.',
+ std:'EPA 2012 Construction General Permit'},
+
+{id:10,cat:'SS',catL:'Sustainable Sites',diff:'adv',
+ q:'For the Heat Island Reduction credit, a roof must achieve a minimum Solar Reflective Index (SRI) of _____ for low-slope (≤2:12) roofs.',
+ opts:['29','39','64','82'],
+ ans:3,ref:'SS Credit Heat Island Reduction · p.197',
+ exp:'Low-slope roofs (pitch ≤2:12) must achieve SRI ≥82. Steep-slope roofs (pitch >2:12) must achieve SRI ≥39. Vegetated roofs (green roofs) count as compliant for the covered area. Alternatively, an SRI-weighted average may be used if a mix of compliant and non-compliant roofing is installed.',
+ std:'ASTM E1980 — SRI calculation standard'},
+
+{id:11,cat:'SS',catL:'Sustainable Sites',diff:'adv',
+ q:'For non-roof hardscape areas (paving, parking), what is the minimum SRI threshold required under the Heat Island Reduction credit?',
+ opts:['29','39','64','82'],
+ ans:0,ref:'SS Credit Heat Island Reduction · p.197',
+ exp:'Non-roof development areas must meet SRI ≥29 for at least 50% of the non-roof hardscape. Alternatively, shading from trees or structures within 10 years, open-grid pavement systems, or underground parking covering ≥50% of the non-roof hardscape satisfy the requirement.',
+ std:'SS Credit Heat Island Reduction — non-roof option'},
+
+{id:12,cat:'SS',catL:'Sustainable Sites',diff:'core',
+ q:'The Rainwater Management credit Path 1 Option 1 requires managing 100% of the runoff volume corresponding to which storm event?',
+ opts:['75th percentile rainfall event','85th percentile rainfall event','95th percentile rainfall event','100-year storm event'],
+ ans:2,ref:'SS Credit Rainwater Management · p.183',
+ exp:'Path 1 (95th percentile) requires managing 100% of the runoff generated by the 95th-percentile rainfall event for the project location using green infrastructure (GI) and low-impact development (LID) techniques on-site. At least 10 years of historical rainfall data must be collected. Path 2 uses the 98th percentile for additional points.',
+ std:'SS Credit Rainwater Management'},
+
+{id:13,cat:'SS',catL:'Sustainable Sites',diff:'adv',
+ q:'Under the Environmental Site Assessment prerequisite (Healthcare only), an ASTM E1527-05 Phase I ESA is valid for how many days?',
+ opts:['90 days','120 days','180 days','365 days'],
+ ans:2,ref:'SS Prerequisite Environmental Site Assessment · Further Explanation p.149',
+ exp:'Per ASTM E1527-05 Section 4.8, a Phase I Environmental Site Assessment is valid for 180 days. Projects with a gap between the Phase I and construction must update the assessment if more than 180 days have elapsed. If contamination is found, a Phase II investigation is required before certification.',
+ std:'ASTM E1527-05 Standard Practice for Environmental Site Assessments — Phase I'},
+
+{id:14,cat:'SS',catL:'Sustainable Sites',diff:'core',
+ q:'The Open Space credit requires that outdoor space equal to a minimum of 30% of the total site area, with at least _____ of that space being vegetated.',
+ opts:['10%','25%','40%','50%'],
+ ans:1,ref:'SS Credit Open Space · p.177',
+ exp:'Projects must provide outdoor space ≥30% of total site area. Of that qualifying open space, at least 25% must be vegetated. Turf grass alone does not satisfy the vegetation requirement — pedestrian-oriented hardscape, wetlands, and native/adaptive plantings qualify. The vegetated portion must also be physically accessible.',
+ std:'SS Credit Open Space'},
+
+// ─── WATER EFFICIENCY ───
+{id:15,cat:'WE',catL:'Water Efficiency',diff:'core',
+ q:'The WE Prerequisite Indoor Water Use Reduction requires an aggregate reduction of what percentage from the EPAct 1992 baseline across all applicable fixtures?',
+ opts:['10%','15%','20%','25%'],
+ ans:2,ref:'WE Prerequisite Indoor Water Use Reduction · p.267',
+ exp:'A minimum 20% aggregate reduction from the EPAct 1992 baseline is required for the prerequisite. Additionally, all newly installed fixtures eligible for the WaterSense label (toilets, urinals, private lavatory faucets, showerheads) MUST be WaterSense labeled — this is a direct label requirement, not just a performance threshold.',
+ std:'EPAct 1992; EPA WaterSense labeling programme'},
+
+{id:16,cat:'WE',catL:'Water Efficiency',diff:'calc',
+ q:'What is the EPAct 1992 baseline flow rate for a public lavatory (restroom) faucet?',
+ opts:['1.5 gpm at 60 psi','2.2 gpm at 60 psi','0.5 gpm at 60 psi','1.0 gpm at 60 psi'],
+ ans:2,ref:'WE Prerequisite Indoor Water Use Reduction · Table 1 p.268',
+ exp:'The EPAct 1992 baseline for public lavatory (restroom) faucets is 0.5 gpm at 60 psi (1.9 lpm at 415 kPa). This is already a very low rate — the prescriptive compliance path requires ≤0.40 gpm (20% reduction). Private lavatory faucets have a higher baseline of 2.2 gpm at 60 psi.',
+ std:'EPAct 1992 — Federal fixture baseline flow rates; Table 1 WE Prereq 2'},
+
+{id:17,cat:'WE',catL:'Water Efficiency',diff:'calc',
+ q:'Using the prescriptive compliance path for WE Prerequisite Indoor Water Use Reduction, what is the maximum allowed flush rate for a toilet (water closet)?',
+ opts:['1.6 gpf (6 lpf)','1.28 gpf (4.8 lpf)','1.0 gpf (3.8 lpf)','0.8 gpf (3.0 lpf)'],
+ ans:1,ref:'WE Prerequisite Indoor Water Use Reduction · Table 6 p.272',
+ exp:'The prescriptive path maximum for toilets is 1.28 gpf (4.8 lpf) — a 20% reduction from the 1.6 gpf EPAct 1992 baseline. For dual-flush toilets, the average is calculated using a 1:2 ratio of full flush to partial flush. WaterSense label is required for all newly installed toilets.',
+ std:'EPA WaterSense; Table 6 WE Prereq 2 prescriptive path'},
+
+{id:18,cat:'WE',catL:'Water Efficiency',diff:'adv',
+ q:'Under WE Prerequisite 2, what is the maximum drift rate for a cross-flow cooling tower?',
+ opts:['0.001% of recirculated water volume','0.002% of recirculated water volume','0.005% of recirculated water volume','0.01% of recirculated water volume'],
+ ans:2,ref:'WE Prerequisite Indoor Water Use Reduction · Table 3 p.269',
+ exp:'Cross-flow cooling towers must be equipped with efficient drift eliminators that reduce drift to a maximum of 0.005% of recirculated water volume. Counterflow towers have a stricter limit of 0.002%. Drift eliminators, makeup water meters, conductivity controllers, and overflow alarms are all required for cooling towers.',
+ std:'WE Prerequisite Indoor Water Use Reduction — Process requirements Table 3'},
+
+{id:19,cat:'WE',catL:'Water Efficiency',diff:'adv',
+ q:'Pre-rinse spray valves used in commercial kitchens must meet what maximum flow rate under WE Prerequisite Indoor Water Use Reduction?',
+ opts:['1.0 gpm (3.8 lpm)','1.3 gpm (4.9 lpm)','1.6 gpm (6.1 lpm)','2.0 gpm (7.6 lpm)'],
+ ans:1,ref:'WE Prerequisite Indoor Water Use Reduction · Table 2 p.268',
+ exp:'Pre-rinse spray valves must have a flow rate ≤1.3 gpm (4.9 lpm). This appliance requirement applies to all commercial kitchens and is mandatory for certification compliance. Commercial clothes washers must meet CEE Tier 3A, and ice machines must be ENERGY STAR certified.',
+ std:'WE Prerequisite Indoor Water Use Reduction — Appliance standards Table 2'},
+
+{id:20,cat:'WE',catL:'Water Efficiency',diff:'core',
+ q:'Which tool is referenced in LEED BD+C for calculating outdoor water use reduction compliance for the WE prerequisite?',
+ opts:['ASHRAE 90.1-2010 irrigation calculator','EPA WaterSense water budget tool','USGBC LEED Online calculator only','National Weather Service precipitation data'],
+ ans:1,ref:'WE Prerequisite Outdoor Water Use Reduction · p.259',
+ exp:'The EPA WaterSense water budget tool is the referenced calculation method for demonstrating the 30% outdoor water use reduction required by the WE Outdoor Water prerequisite. It establishes the baseline irrigation demand based on local climate, landscape type, and irrigation efficiency.',
+ std:'WE Prerequisite Outdoor Water Use Reduction; EPA WaterSense'},
+
+// ─── ENERGY & ATMOSPHERE ───
+{id:21,cat:'EA',catL:'Energy & Atmosphere',diff:'core',
+ q:'The EA Prerequisite Fundamental Commissioning requires the Commissioning Authority (CxA) to have experience on at least how many similar projects, spanning from early design through what minimum post-occupancy period?',
+ opts:['1 project; 6 months post-occupancy','2 projects; 10 months post-occupancy','2 projects; 12 months post-occupancy','3 projects; 6 months post-occupancy'],
+ ans:1,ref:'EA Prerequisite Fundamental Commissioning · CxA Qualifications p.322',
+ exp:'The CxA must have documented commissioning process experience on at least TWO building projects with similar scope, where the experience extends from early design phase through at least 10 months of occupancy. The definition of "similar scope" is defined by the owner and may consider building size, equipment types, or function.',
+ std:'ASHRAE Guideline 0-2005; EA Prerequisite Fundamental Commissioning'},
+
+{id:22,cat:'EA',catL:'Energy & Atmosphere',diff:'adv',
+ q:'For the EA Prerequisite Fundamental Commissioning, which of the following describes when the CxA CAN be an employee of the design or construction firm?',
+ opts:['Only for projects under 20,000 sf (1,860 m²)','For projects where the CxA was selected through a competitive bid process','Never — the CxA must always be independent','Only if the owner requires a single contract entity such as through a government agency'],
+ ans:0,ref:'EA Prerequisite Fundamental Commissioning · CxA Qualifications Table 1 p.328',
+ exp:'For projects smaller than 20,000 sf (1,860 m²), the CxA may be a qualified member of the design or construction team. Additionally, if an owner requires a single contract entity (e.g., government contracting through a general contractor), the CxA may also be from the design/construction firm for FUNDAMENTAL Cx only. For ENHANCED Cx credit, the CxA must ALWAYS be independent of the design or construction firm.',
+ std:'EA Prerequisite Fundamental Commissioning — CxA qualification rules'},
+
+{id:23,cat:'EA',catL:'Energy & Atmosphere',diff:'adv',
+ q:'During functional performance testing, what is the acceptable sampling rate for identical unit systems (e.g., multiple fan coil units of the same type)?',
+ opts:['5 units or 5%, whichever is greater','10 units or 10%, whichever is greater','15 units or 15%, whichever is greater','All units must be individually tested — no sampling'],
+ ans:1,ref:'EA Prerequisite Fundamental Commissioning · Step 12 p.325',
+ exp:'The acceptable sampling rate is "10 or 10%" — for multiple identical units of the same type with the same components and sequences (such as fan coil units or VAV systems), the commissioning team may test only 10 units or 10% of the units, whichever is GREATER. This sampling strategy only applies to functional testing, not construction checklists.',
+ std:'EA Prerequisite Fundamental Commissioning — functional testing'},
+
+{id:24,cat:'EA',catL:'Energy & Atmosphere',diff:'core',
+ q:'EA Prerequisite Minimum Energy Performance requires new buildings to demonstrate what percentage improvement over the ASHRAE 90.1-2010 energy cost baseline?',
+ opts:['3%','5%','8%','10%'],
+ ans:1,ref:'EA Prerequisite Minimum Energy Performance · p.335',
+ exp:'New buildings must achieve at least 5% improvement over the ASHRAE 90.1-2010 energy cost budget baseline. This is the mandatory prerequisite floor. The EA Credit Optimize Energy Performance awards up to 18 additional points for incremental improvements beyond this, up to 50%+ improvement. The energy model must follow ASHRAE 90.1-2010 Appendix G simulation procedures.',
+ std:'ASHRAE 90.1-2010 Appendix G — Energy Cost Budget Method'},
+
+{id:25,cat:'EA',catL:'Energy & Atmosphere',diff:'adv',
+ q:'What is the maximum number of points available under EA Credit Optimize Energy Performance for LEED BD+C New Construction?',
+ opts:['10 points','14 points','18 points','22 points'],
+ ans:2,ref:'EA Credit Optimize Energy Performance · p.405',
+ exp:'EA Credit Optimize Energy Performance offers up to 18 points — making it the single highest-value credit in LEED BD+C. Points scale from 1 point (minimal improvement beyond 5% prereq) to 18 points (≥50% improvement over ASHRAE 90.1-2010 baseline). This credit, combined with EA Enhanced Commissioning (6 pts), makes Energy & Atmosphere the dominant category at 33 total points.',
+ std:'ASHRAE 90.1-2010; EA Credit Optimize Energy Performance'},
+
+{id:26,cat:'EA',catL:'Energy & Atmosphere',diff:'core',
+ q:'The EA Prerequisite Fundamental Refrigerant Management prohibits the use of which refrigerant type in new HVAC&R base building systems?',
+ opts:['HFCs (Hydrofluorocarbons) with GWP above 2,000','HCFCs (Hydrochlorofluorocarbons) in all new systems','CFCs (Chlorofluorocarbons) in all new base building systems','Natural refrigerants (ammonia, CO₂) in occupied spaces'],
+ ans:2,ref:'EA Prerequisite Fundamental Refrigerant Management · p.381',
+ exp:'The prerequisite prohibits all CFC-based refrigerants in new base building HVAC&R systems due to their high ozone-depleting potential. For existing buildings undergoing major renovation, CFC-based refrigerant equipment must be phased out OR a documented phase-out plan must be submitted. HCFCs and HFCs are permitted under the prerequisite (though addressed by the Enhanced Refrigerant credit).',
+ std:'Montreal Protocol; EA Prerequisite Fundamental Refrigerant Management'},
+
+{id:27,cat:'EA',catL:'Energy & Atmosphere',diff:'adv',
+ q:'The EA Credit Enhanced Refrigerant Management requires calculating which combined refrigerant impact metric?',
+ opts:['ODP × GWP × refrigerant charge','LCGWP + LCODP','Annual leakage rate × GWP100','Total equivalent warming impact (TEWI)'],
+ ans:1,ref:'EA Credit Enhanced Refrigerant Management · p.441',
+ exp:'The credit uses the Life Cycle Climate Performance (LCCP) metric which combines LCGWP (Life Cycle Global Warming Potential) + LCODP (Life Cycle Ozone Depletion Potential) into a single impact measure. This combined metric is used to select refrigerants with the lowest overall environmental impact, considering both GWP and ODP across the system\'s full service life.',
+ std:'EA Credit Enhanced Refrigerant Management — LCGWP+LCODP calculation'},
+
+{id:28,cat:'EA',catL:'Energy & Atmosphere',diff:'adv',
+ q:'Which of the following is NOT a system type required to be commissioned under the EA Prerequisite Fundamental Commissioning?',
+ opts:['Mechanical HVAC&R equipment and controls','Plumbing including domestic hot water systems','Life safety and fire alarm systems','Renewable energy systems (e.g., PV solar)'],
+ ans:2,ref:'EA Prerequisite Fundamental Commissioning · Further Explanation p.326',
+ exp:'Life safety systems, communications and data systems, fire protection and fire alarm systems, and process equipment are NOT required under the prerequisite but may be added to the Cx scope at the owner\'s request. Required systems are: mechanical (HVAC&R), plumbing (domestic hot water, pumps), electrical (service, distribution, lighting, daylighting controls), and renewable energy systems.',
+ std:'ASHRAE Guideline 0-2005; EA Prerequisite Fundamental Commissioning'},
+
+{id:29,cat:'EA',catL:'Energy & Atmosphere',diff:'core',
+ q:'Under EA Prerequisite Building-Level Energy Metering, what commitment must the project owner make?',
+ opts:['Publish monthly energy reports on LEED Online','Share whole-building energy consumption data with USGBC/GBCI for 5 years post-occupancy','Install sub-meters on every energy end use exceeding 10% of total consumption','Achieve an EPA Energy Star score of 75 or higher within 12 months of occupancy'],
+ ans:1,ref:'EA Prerequisite Building-Level Energy Metering · p.375',
+ exp:'The project owner must commit to sharing whole-building energy and water consumption data with USGBC/GBCI for a period of 5 years beginning with occupancy, or until the building changes ownership, whichever comes first. This is also an MPR (Minimum Program Requirement) commitment required of all LEED projects regardless of certification target.',
+ std:'EA Prerequisite Building-Level Energy Metering; MPR 6'},
+
+{id:30,cat:'EA',catL:'Energy & Atmosphere',diff:'adv',
+ q:'The Owner\'s Project Requirements (OPR) is developed by whom, and in which project phase?',
+ opts:['The CxA alone, during construction documents','The owner with design team support, during predesign','The design engineer, during schematic design','The general contractor, during construction'],
+ ans:1,ref:'EA Prerequisite Fundamental Commissioning · Step 1 p.323',
+ exp:'The OPR is developed by the owner with help from the design team and other stakeholders during the predesign stage. It establishes the owner\'s goals, the building\'s intended function, and operational needs. It is the foundational document driving all design, construction, acceptance, and operational decisions. Any revisions to the OPR must also be reflected in the BOD (Basis of Design).',
+ std:'ASHRAE Guideline 0-2005 — Owner\'s Project Requirements'},
+
+// ─── MATERIALS & RESOURCES ───
+{id:31,cat:'MR',catL:'Materials & Resources',diff:'core',
+ q:'The MR Prerequisite Storage and Collection of Recyclables requires dedicated space for which minimum set of materials?',
+ opts:['Paper and cardboard only','Paper, cardboard, glass, plastics, and metals — plus e-waste and mercury lamps','All materials including composting and food waste','Only C&D waste during construction'],
+ ans:1,ref:'MR Prerequisite Storage and Collection of Recyclables · p.473',
+ exp:'The prerequisite requires dedicated, accessible, clearly marked areas for the collection and storage of at minimum: paper, cardboard, glass, plastics, and metals. Additionally, e-waste collection and mercury-containing lamps must be accommodated. For multitenant buildings, the collection area must be accessible to all occupants and serve the entire building.',
+ std:'MR Prerequisite Storage and Collection of Recyclables'},
+
+{id:32,cat:'MR',catL:'Materials & Resources',diff:'adv',
+ q:'Under the MR category, products extracted, manufactured, AND purchased within 100 miles (160 km) of the project are valued at what percentage of their cost in credit calculations?',
+ opts:['100% (standard valuation)','125% of cost','150% of cost','200% of cost'],
+ ans:3,ref:'MR Overview · Materials Valuation Factor p.470',
+ exp:'Products meeting the location criteria (all extraction, manufacture, and purchase within 100 miles/160 km) are valued at 200% of their base cost — a 2× valuation factor — when calculating credit compliance percentages. However, the product must ALSO meet at least one sustainability criterion (such as recycled content, FSC certification, or EPD) to qualify for the 200% factor. The distance is measured as the crow flies.',
+ std:'MR Overview — Location valuation factor; 100 miles/160 km radius'},
+
+{id:33,cat:'MR',catL:'Materials & Resources',diff:'adv',
+ q:'For the Building Product Disclosure — EPD credit, how many products from how many manufacturers must have product-specific EPDs to earn one point?',
+ opts:['10 products from 3+ manufacturers','15 products from 3+ manufacturers','20 products from 5+ manufacturers','25 products from 5+ manufacturers'],
+ ans:2,ref:'MR Credit Building Product Disclosure EPD · p.513',
+ exp:'At least 20 permanently installed products from at least 5 different manufacturers must have product-specific Type III EPDs (conforming to ISO 14025 and EN 15804) to earn one point. A second point is available for achieving an optimized environmental impact (products in the concrete, steel, glass, or insulation categories with EPDs showing impacts in the lowest 10th percentile).',
+ std:'ISO 14025; EN 15804; MR Credit Building Product Disclosure EPD'},
+
+{id:34,cat:'MR',catL:'Materials & Resources',diff:'adv',
+ q:'The MR Credit Construction and Demolition Waste Management awards 2 points for diverting what percentage of C&D waste from landfill?',
+ opts:['50%','60%','75%','90%'],
+ ans:2,ref:'MR Credit C&D Waste Management · p.587',
+ exp:'Diverting at least 50% of C&D waste from landfill earns 1 point. Diverting at least 75% earns 2 points. Waste must be tracked consistently throughout construction (by weight or volume — choose one and maintain consistency). Excavated soil and land-clearing debris are excluded from the calculation entirely.',
+ std:'MR Credit Construction and Demolition Waste Management'},
+
+{id:35,cat:'MR',catL:'Materials & Resources',diff:'core',
+ q:'Rapidly renewable materials qualify under LEED MR credits when they are agricultural products (fiber or animal) with a harvest cycle of:',
+ opts:['5 years or less','10 years or less','15 years or less','25 years or less'],
+ ans:1,ref:'MR Overview · Material definitions p.468',
+ exp:'Rapidly renewable materials are defined as agricultural products (both fiber and animal materials) that take 10 years or less to harvest. Examples include bamboo, cork, cotton, wool, linoleum, agrifibre products, and straw bales. They contribute to MR credit calculations under the Sourcing of Raw Materials credit.',
+ std:'MR Credit Building Product Disclosure — Sourcing of Raw Materials'},
+
+{id:36,cat:'MR',catL:'Materials & Resources',diff:'adv',
+ q:'An HPD (Health Product Declaration) is used to demonstrate compliance with which MR credit?',
+ opts:['Building Life-Cycle Impact Reduction','Building Product Disclosure — Environmental Product Declarations','Building Product Disclosure — Material Ingredients','Building Product Disclosure — Sourcing of Raw Materials'],
+ ans:2,ref:'MR Credit Building Product Disclosure — Material Ingredients · p.541',
+ exp:'HPDs (Health Product Declarations) are used for the Material Ingredients credit, which discloses the chemical composition and potential health hazards of building products. Acceptable alternatives include Declare labels (Living Building Challenge) and Cradle to Cradle certification. This is distinct from EPDs, which document environmental impact (global warming, acidification, etc.) and are used for the Environmental Product Declarations credit.',
+ std:'MR Credit Building Product Disclosure — Material Ingredients'},
+
+{id:37,cat:'MR',catL:'Materials & Resources',diff:'adv',
+ q:'The MR Prerequisite C&D Waste Management Planning requires identifying at minimum how many materials targeted for diversion?',
+ opts:['2 materials','3 materials','5 materials','10 materials'],
+ ans:2,ref:'MR Prerequisite C&D Waste Management Planning · p.479',
+ exp:'The prerequisite requires identifying at least 5 materials to be diverted from landfill, setting diversion volume targets, and identifying how and where materials will be disposed of or diverted. This is the planning prerequisite — the actual diversion performance and tracking is captured by the C&D Waste Management credit.',
+ std:'MR Prerequisite Construction and Demolition Waste Management Planning'},
+
+{id:38,cat:'MR',catL:'Materials & Resources',diff:'core',
+ q:'Which of the following is explicitly excluded from Construction and Demolition waste calculations in LEED?',
+ opts:['Scrap metal from structural steel connections','Excess concrete from cast-in-place pours','Excavated soil and land clearing debris','Cardboard packaging from delivered materials'],
+ ans:2,ref:'MR Credit C&D Waste Management · p.587',
+ exp:'Excavated soil and land clearing debris are explicitly excluded from C&D waste calculations. They are not counted in the total waste generated, nor toward the diverted total. Hazardous or contaminated materials are also excluded but must be addressed separately. All other construction waste (metal, concrete, wood, cardboard, drywall, etc.) is typically included.',
+ std:'MR Credit Construction and Demolition Waste Management'},
+
+// ─── INDOOR ENVIRONMENTAL QUALITY ───
+{id:39,cat:'EQ',catL:'Indoor Environmental Quality',diff:'core',
+ q:'The EQ Prerequisite Minimum IAQ Performance requires compliance with which primary ventilation standard?',
+ opts:['ASHRAE 55-2010 (Thermal Comfort)','ASHRAE 62.1-2010 (Ventilation for Acceptable IAQ)','ASHRAE 52.2-2007 (Air filter efficiency)','SMACNA 2007 IAQ Guidelines'],
+ ans:1,ref:'EQ Prerequisite Minimum Indoor Air Quality Performance · p.605',
+ exp:'The prerequisite requires meeting ASHRAE 62.1-2010 for mechanically ventilated spaces using either the ventilation rate procedure or the IAQ procedure. Naturally ventilated spaces must meet the natural ventilation procedure of ASHRAE 62.1-2010. CO₂ monitors are required in densely occupied spaces (>25 people/1,000 sf). Garages require CO monitors.',
+ std:'ASHRAE 62.1-2010 — Ventilation for Acceptable Indoor Air Quality'},
+
+{id:40,cat:'EQ',catL:'Indoor Environmental Quality',diff:'adv',
+ q:'Under EQ Prerequisite Environmental Tobacco Smoke Control, if a project chooses to provide an enclosed interior smoking room (Option 2), what minimum negative pressure differential must be maintained?',
+ opts:['−3 Pa','−5 Pa','−7 Pa','−10 Pa'],
+ ans:2,ref:'EQ Prerequisite Environmental Tobacco Smoke Control · p.623',
+ exp:'Enclosed smoking rooms must maintain a minimum of −7 Pa (negative pressure) relative to all adjacent spaces. The room must also have 100% exhaust directly to the outdoors with no air recirculation to other building spaces. Additionally, exterior smoking areas must be ≥25 feet from all entries, outdoor air intakes, and operable windows.',
+ std:'EQ Prerequisite Environmental Tobacco Smoke Control — Option 2'},
+
+{id:41,cat:'EQ',catL:'Indoor Environmental Quality',diff:'adv',
+ q:'For all paints and coatings wet-applied on site, the EQ Low-Emitting Materials credit requires compliance with which VOC content standard?',
+ opts:['Green Seal GS-11 (paints and coatings)','CARB 2007 SCM for Architectural Coatings, or SCAQMD Rule 1113','LEED Reference Guide maximum VOC table','CDPH Standard Method v1.1-2010 only'],
+ ans:1,ref:'EQ Credit Low-Emitting Materials · p.660',
+ exp:'On-site applied paints and coatings must meet either CARB 2007 Suggested Control Measure (SCM) for Architectural Coatings or SCAQMD Rule 1113 (effective June 3, 2011). Adhesives and sealants wet-applied on site must meet SCAQMD Rule 1168 (July 1, 2005). All interior products must also meet the general emissions evaluation under CDPH Standard Method v1.1-2010.',
+ std:'CARB 2007 SCM; SCAQMD Rule 1113; SCAQMD Rule 1168'},
+
+{id:42,cat:'EQ',catL:'Indoor Environmental Quality',diff:'adv',
+ q:'Composite wood products (plywood, particleboard, MDF) must comply with which standard under the Low-Emitting Materials credit?',
+ opts:['Green Label Plus (Carpet and Rug Institute)','CARB ATCM (ULEF or NAF resin requirement)','FloorScore certification','ANSI/BIFMA M7.1-2011'],
+ ans:1,ref:'EQ Credit Low-Emitting Materials · p.661',
+ exp:'Composite wood (as defined by CARB) must meet the California Air Resources Board Airborne Toxic Control Measure (ATCM) formaldehyde requirements — specifically using ultra-low-emitting formaldehyde (ULEF) resins or no-added-formaldehyde (NAF) resins. Additionally, for Healthcare and Schools, batt insulation may contain no added formaldehyde of any type.',
+ std:'CARB ATCM — Formaldehyde emissions from composite wood products'},
+
+{id:43,cat:'EQ',catL:'Indoor Environmental Quality',diff:'core',
+ q:'The EQ Credit Thermal Comfort requires design to comply with which standard?',
+ opts:['ASHRAE 62.1-2010','ASHRAE 52.2-2007','ASHRAE 55-2010','ISO 7730-2005'],
+ ans:2,ref:'EQ Credit Thermal Comfort · p.695',
+ exp:'Thermal comfort design must comply with ASHRAE 55-2010 Thermal Environmental Conditions for Human Occupancy. The credit also requires providing individual occupant controls for at least 50% of workstations in office environments. Additionally, the project must commit to conducting a corrective action survey if more than 20% of occupants are dissatisfied.',
+ std:'ASHRAE 55-2010 — Thermal Environmental Conditions for Human Occupancy'},
+
+{id:44,cat:'EQ',catL:'Indoor Environmental Quality',diff:'adv',
+ q:'Which of the following materials are classified as "inherently nonemitting" and require NO VOC emissions testing under the Low-Emitting Materials credit?',
+ opts:['Carpet with synthetic backing','Factory-finished hardwood flooring with polyurethane coating','Ceramic tile, glass, concrete, and unfinished solid wood flooring','Painted gypsum wallboard (painted on-site)'],
+ ans:2,ref:'EQ Credit Low-Emitting Materials · p.659',
+ exp:'Inherently nonemitting sources include: stone, ceramic, powder-coated metals, plated or anodized metal, glass, concrete, clay brick, and unfinished or untreated solid wood flooring — provided they do NOT include integral organic-based surface coatings, binders, or sealants. These materials are considered fully compliant without any VOC emissions testing.',
+ std:'EQ Credit Low-Emitting Materials — Inherently nonemitting sources'},
+
+{id:45,cat:'EQ',catL:'Indoor Environmental Quality',diff:'adv',
+ q:'The Construction IAQ Management Plan credit is based on the guidelines published by which organisation?',
+ opts:['ASHRAE (Guideline 0-2005)','EPA (Construction General Permit)','SMACNA (Sheet Metal and Air-conditioning National Contractors Association)','NIBS (National Institute of Building Sciences)'],
+ ans:2,ref:'EQ Credit Construction IAQ Management Plan · p.677',
+ exp:'The credit requires implementing the SMACNA IAQ Guidelines for Occupied Buildings Under Construction (2nd Edition, 2007). SMACNA guidelines address 5 key areas: protection of HVAC equipment, source control, housekeeping, pathway interruption, and scheduling. The plan must be maintained throughout construction and a pre-occupancy flush-out or IAQ testing is addressed under a separate credit.',
+ std:'SMACNA IAQ Guidelines for Occupied Buildings Under Construction, 2nd Ed. 2007'},
+
+{id:46,cat:'EQ',catL:'Indoor Environmental Quality',diff:'adv',
+ q:'The Minimum Acoustic Performance prerequisite (Schools and Healthcare) references which standard for background noise and sound transmission requirements?',
+ opts:['ISO 140 series','ASHRAE 62.1-2010 acoustic provisions','ANSI/ASA S12.60-2010','IES lighting and acoustics standard'],
+ ans:2,ref:'EQ Prerequisite Minimum Acoustic Performance · p.633',
+ exp:'The prerequisite cites ANSI/ASA S12.60-2010 (Acoustical Performance Criteria, Design Requirements, and Guidelines for Schools) for background noise levels and reverberation time requirements. For Schools: background noise ≤35 dBA in core learning spaces. Healthcare facilities also use this standard for acoustic performance requirements.',
+ std:'ANSI/ASA S12.60-2010 — Acoustical Performance Criteria for Schools'},
+
+{id:47,cat:'EQ',catL:'Indoor Environmental Quality',diff:'calc',
+ q:'For the EQ Indoor Air Quality Assessment credit, a pre-occupancy flush-out requires a total air volume of _______ cubic feet of outdoor air per square foot of floor area.',
+ opts:['7,000 cu ft/sf','10,000 cu ft/sf','14,000 cu ft/sf','20,000 cu ft/sf'],
+ ans:2,ref:'EQ Credit Indoor Air Quality Assessment · p.685',
+ exp:'Option 1 (flush-out) requires supplying a total outdoor air volume of 14,000 cu ft per sq ft (4,320 L/m²) of gross floor area. The flush-out must be conducted at minimum 0.1 cfm/sf of outdoor air with interior temperature ≥60°F and relative humidity ≤60%. This is the standard pre-occupancy flush-out path (1 point). The testing path (Option 2) earns 2 points.',
+ std:'EQ Credit Indoor Air Quality Assessment — Option 1 Flush-out'},
+
+{id:48,cat:'EQ',catL:'Indoor Environmental Quality',diff:'adv',
+ q:'Furniture VOC emissions testing for the Low-Emitting Materials credit must be conducted per which standard?',
+ opts:['CDPH Standard Method v1.1-2010 (private office scenario)','ANSI/BIFMA Standard Method M7.1-2011 / e3-2011','SCAQMD Rule 1168','Green Seal GS-42'],
+ ans:1,ref:'EQ Credit Low-Emitting Materials · p.661',
+ exp:'New furniture and furnishing items must be tested per ANSI/BIFMA Standard Method M7.1-2011 and comply with ANSI/BIFMA e3-2011 Furniture Sustainability Standard Sections 7.6.1 and 7.6.2. Test results must be modelled using the open plan, private office, or seating scenario as appropriate. Salvaged/reused furniture more than 1 year old is considered compliant.',
+ std:'ANSI/BIFMA M7.1-2011; ANSI/BIFMA e3-2011'},
+
+// ─── INNOVATION ───
+{id:49,cat:'IN',catL:'Innovation',diff:'core',
+ q:'How many total Innovation points can a LEED BD+C project earn?',
+ opts:['4 points','5 points','6 points','8 points'],
+ ans:2,ref:'IN Overview · p.777',
+ exp:'Projects can earn up to 6 Innovation points: up to 5 points through Innovation credits (via exemplary performance, new innovative strategies, or pilot credits) and 1 additional point for having a LEED AP with the appropriate specialty (e.g., LEED AP BD+C) as a principal participant in the project team. Only 1 LEED AP point is available regardless of how many LEED APs are on the team.',
+ std:'IN Credit Innovation; IN Credit LEED Accredited Professional'},
+
+{id:50,cat:'IN',catL:'Innovation',diff:'adv',
+ q:'To earn an exemplary performance Innovation point for a particular credit, a project must typically:',
+ opts:['Achieve the highest available credit tier plus document at least 1% additional improvement','Double the credit requirement OR achieve the next incremental performance threshold above the maximum credit level','Submit a detailed narrative and formal petition to USGBC for approval','Have a LEED Fellow review and certify the exemplary performance'],
+ ans:1,ref:'IN Credit Innovation · p.779',
+ exp:'Exemplary performance points are earned by going beyond the requirements of a specific LEED credit — either by doubling the credit requirement (e.g., diverting 150% of the stated diversion threshold for C&D waste if that equals the next tier) or by achieving the next incremental performance level above what is required for full credit points. Not all credits offer exemplary performance — it is indicated in the reference guide under each credit.',
+ std:'IN Credit Innovation — Exemplary Performance path'},
+
+// ─── REGIONAL PRIORITY ───
+{id:51,cat:'RP',catL:'Regional Priority',diff:'core',
+ q:'How many Regional Priority bonus points can a single LEED project earn?',
+ opts:['2 points maximum','4 points maximum','6 points maximum','Up to the number of RP credits available for the project zip code'],
+ ans:1,ref:'RP Credit Regional Priority · p.791',
+ exp:'A project can earn a maximum of 4 Regional Priority bonus points. These are awarded for earning credits that have been identified as regionally specific environmental priorities for the project\'s location (determined by zip code or project location for international projects). The regional priorities are identified by local USGBC chapters and listed on the USGBC website.',
+ std:'RP Credit Regional Priority'},
+
+// ─── ADVANCED CROSS-CATEGORY ───
+{id:52,cat:'EA',catL:'Energy & Atmosphere',diff:'calc',
+ q:'A building\'s energy model shows a 12% improvement over the ASHRAE 90.1-2010 baseline. The project has also achieved Enhanced Commissioning with Monitoring-Based Cx and Envelope Commissioning. What is the MAXIMUM total EA points achievable?',
+ opts:['7 points (5 EA Optimize + 2 Enhanced Cx)','9 points (5 EA Optimize + 4 Enhanced Cx)','11 points (5 EA Optimize + 6 Enhanced Cx)','13 points (7 EA Optimize + 6 Enhanced Cx)'],
+ ans:2,ref:'EA Credit Optimize Energy Performance p.405; EA Credit Enhanced Commissioning p.387',
+ exp:'At 12% improvement, the project earns approximately 5 points on the Optimize Energy Performance scale. Enhanced Commissioning with both Monitoring-Based Cx (+2 pts) and Envelope Commissioning (+2 pts) on top of the base enhanced Cx (2 pts) = 6 total Enhanced Cx points. Total: 5 + 6 = 11 points.',
+ std:'EA Credit Optimize Energy Performance; EA Credit Enhanced Commissioning'},
+
+{id:53,cat:'WE',catL:'Water Efficiency',diff:'adv',
+ q:'Under Compliance Path 2 (Usage-Based Calculation) for WE Indoor Water Use Reduction, what is the basis for the calculation?',
+ opts:['Fixture list cost comparison to national average','Building occupancy × daily use estimate × fixture flow rates vs baseline','Square footage × water use intensity benchmark','Actual metered water consumption from similar projects'],
+ ans:1,ref:'WE Prerequisite Indoor Water Use Reduction · Compliance Path 2 p.272',
+ exp:'The Usage-Based Calculation path uses building occupancy counts (FTE employees, daily visitors) multiplied by estimated daily use frequencies and actual fixture flow rates compared to EPAct 1992 baseline flow rates. This produces a "design case" vs "baseline case" water consumption comparison. Projects pursuing WE Credit Indoor Water Use Reduction MUST use this path (Path 1 prescriptive is prereq-only).',
+ std:'WE Prerequisite / Credit Indoor Water Use Reduction — Usage calculation'},
+
+{id:54,cat:'MR',catL:'Materials & Resources',diff:'adv',
+ q:'When calculating the material contribution of an assembly (e.g., a $500 office chair with multiple components), the contributing value toward MR credit compliance is based on:',
+ opts:['The total purchase cost of the chair regardless of which components qualify','The percentage by weight of the qualifying component × total product cost','The percentage by volume of the qualifying component × total product cost','Half the total cost for any assembly with any qualifying component'],
+ ans:1,ref:'MR Overview · Determining Material Contributions of an Assembly p.471',
+ exp:'For assemblies, the contributing value = (total product cost) × (% of component by weight meeting sustainability criteria). So a $500 chair where the metal base is 20% of weight and has 25% recycled content contributes: $500 × 20% × 25% = $25 toward the recycled content calculation. Weight percentage is used — not volume or cost percentage of the component.',
+ std:'MR Overview — Material valuation for assemblies'},
+
+{id:55,cat:'SS',catL:'Sustainable Sites',diff:'adv',
+ q:'A project is pursuing the Site Development — Protect or Restore Habitat credit on a brownfield (previously developed) site. What percentage of the site must be restored with native or adapted vegetation?',
+ opts:['10% of the total site area','20% of the previously developed site area','30% of the total site area (excluding building footprint)','50% of the previously developed impervious area'],
+ ans:2,ref:'SS Credit Site Development — Protect or Restore Habitat · p.163',
+ exp:'For previously developed or disturbed sites: the project must restore at least 30% of the total site area (excluding the building footprint) with native or adapted vegetation. On greenfield sites: development must be limited to 40 ft from the building, 10 ft from constructed features, and 25 ft from pervious surfaces. Higher restoration percentages can earn exemplary performance Innovation points.',
+ std:'SS Credit Site Development — Protect or Restore Habitat'},
+
+{id:56,cat:'EA',catL:'Energy & Atmosphere',diff:'adv',
+ q:'Under EA Credit Green Power and Carbon Offsets, how many years must the green power procurement contract cover?',
+ opts:['1 year','2 years','5 years','The full remaining building operational life'],
+ ans:2,ref:'EA Credit Green Power and Carbon Offsets · p.453',
+ exp:'The green power and/or carbon offset procurement contract must cover a minimum of 5 years. 1 point is earned for 50% of building energy use from green power; 2 points for 100%. The RECs or carbon offsets must be Green-e certified or equivalent. On-site renewable energy generation does NOT count toward this credit (it is covered separately under EA Credit Renewable Energy Production).',
+ std:'EA Credit Green Power and Carbon Offsets — Green-e certification'},
+
+{id:57,cat:'LT',catL:'Location & Transportation',diff:'adv',
+ q:'Under the LEED BD+C Rating System Selection guidance, the "60/40 rule" states that if a particular rating system is appropriate for MORE than 60% of a project\'s gross floor area:',
+ opts:['The project team must seek a variance from USGBC before using that rating system','That rating system should be used','The project may use any rating system of its choosing','The 60/40 threshold must be verified by GBCI before registration'],
+ ans:1,ref:'Rating System Selection Guidance · p.33',
+ exp:'The 60/40 rule: if a rating system is appropriate for >60% of the gross floor area, that system SHOULD be used. If it applies to 40–60%, the project team independently decides. If it applies to <40%, it should NOT be used. The entire gross floor area must be certified under a single rating system regardless of mixed-use.',
+ std:'Rating System Selection Guidance — 60/40 rule'},
+
+{id:58,cat:'SS',catL:'Sustainable Sites',diff:'core',
+ q:'Under Minimum Program Requirement 3, what is the minimum gross floor area for a LEED BD+C project to be eligible for certification?',
+ opts:['500 sf (46 m²)','1,000 sf (93 m²)','2,500 sf (230 m²)','5,000 sf (465 m²)'],
+ ans:1,ref:'Minimum Program Requirements · MPR 3 p.29',
+ exp:'LEED BD+C and LEED O+M projects must include a minimum of 1,000 sf (93 m²) of gross floor area. LEED ID+C projects have a lower threshold of 250 sf (22 m²). LEED ND projects must contain at least 2 habitable buildings and not exceed 1,500 acres. Projects must also have gross floor area ≥2% of the gross land area within the LEED project boundary.',
+ std:'MPR 3 — Must comply with minimum project size requirements'},
+
+{id:59,cat:'WE',catL:'Water Efficiency',diff:'adv',
+ q:'For LEED BD+C projects, which TWO compliance paths are available for WE Prerequisite Indoor Water Use Reduction?',
+ opts:['Path 1: Prescriptive (fixture list with WaterSense products); Path 2: Usage-based calculation','Path 1: 20% reduction narrative; Path 2: WaterSense product substitution only','Path 1: Metered water data comparison; Path 2: Engineering estimate','Path 1: Fixture schedule compliance; Path 2: Third-party commissioning verification'],
+ ans:0,ref:'WE Prerequisite Indoor Water Use Reduction · Step-by-Step p.270',
+ exp:'Two compliance paths exist: Path 1 (Prescriptive Achievement) — all installed fixtures meet prescriptive WaterSense maximum rates and is documented via product cutsheets or fixture schedules. Path 2 (Usage-Based Calculation) — uses the USGBC indoor water use calculator to demonstrate aggregate 20% reduction. Projects pursuing the WE Credit (beyond the prereq) MUST use Path 2.',
+ std:'WE Prerequisite Indoor Water Use Reduction — Compliance Path 1 and 2'},
+
+{id:60,cat:'MR',catL:'Materials & Resources',diff:'core',
+ q:'Which standard governs Life Cycle Assessment (LCA) methodology referenced for the MR Credit Building Life-Cycle Impact Reduction?',
+ opts:['ASTM E2114','ISO 14044','EN 15804 only','ASHRAE 189.1'],
+ ans:1,ref:'MR Credit Building Life-Cycle Impact Reduction · p.495',
+ exp:'ISO 14044 (Environmental management — Life cycle assessment — Requirements and guidelines) is the referenced standard for LCA methodology under the Building Life-Cycle Impact Reduction credit. When pursuing the whole-building LCA path (Option 4), teams must demonstrate at least a 10% reduction in at least 3 of 6 specific impact categories compared to a reference building using ISO 14044-compliant software.',
+ std:'ISO 14044 — Life Cycle Assessment Requirements and Guidelines'},
+
+{id:61,cat:'EA',catL:'Energy & Atmosphere',diff:'adv',
+ q:'The EA Credit Demand Response awards 2 points for which achievement?',
+ opts:['Installing smart meters on all electrical panels','Reducing peak electricity demand by 10% vs the design baseline','Implementing a complete demand response programme OR installing infrastructure for future demand response with load shed capacity documentation','Achieving an EPA Energy Star score of 90 or above'],
+ ans:2,ref:'EA Credit Demand Response · p.421',
+ exp:'2 points are available for either: (1) fully participating in an existing utility demand response programme with multi-year commitment and automated DR capability, OR (2) for projects where no DR programme is available — installing base infrastructure enabling future DR participation and documenting the potential load shed capacity. Both paths require multi-year commitment or infrastructure planning.',
+ std:'EA Credit Demand Response'},
+
+{id:62,cat:'EQ',catL:'Indoor Environmental Quality',diff:'adv',
+ q:'Under the EQ Credit Daylight, which metric measures the percentage of occupied floor area receiving adequate daylight for a specified number of hours per year?',
+ opts:['ASE (Annual Sun Exposure)','sDA (Spatial Daylight Autonomy)','CRI (Color Rendering Index)','UGR (Unified Glare Rating)'],
+ ans:1,ref:'EQ Credit Daylight · p.723',
+ exp:'sDA (Spatial Daylight Autonomy) measures the percentage of the occupied floor area that receives at least 300 lux for a minimum of 50% of annual occupied hours. Achieving sDA ≥55% earns 2 points; ≥75% earns 3 points. ASE (Annual Sun Exposure) measures hours of direct sun exceeding 1,000 lux — it is a glare metric, and ASE ≤10% is required as a threshold (not a scoreable metric itself).',
+ std:'EQ Credit Daylight — sDA and ASE metrics; Climate-based daylight modelling'},
+
+{id:63,cat:'LT',catL:'Location & Transportation',diff:'adv',
+ q:'Under the LEED BD+C Getting Started, a project includes several physically distinct structures for a hospital campus. What is the maximum aggregate gross floor area permitted in a single LEED project certification application?',
+ opts:['500,000 sf','750,000 sf','1,000,000 sf (1 million sf)','No limit when using the Campus approach'],
+ ans:2,ref:'Getting Started · Projects with Several Physically Distinct Structures p.14',
+ exp:'Projects using the multiple-structure provision (hospitals, schools, hotels, resorts) may include multiple buildings under one certification, provided they are part of the same identity, analyzed as a whole, and the aggregate gross floor area does NOT exceed 1,000,000 sf (92,905 m²). Any single structure larger than 25,000 sf must register as a separate project or be part of a group certification.',
+ std:'Getting Started — Projects with Several Physically Distinct Structures'},
+
+{id:64,cat:'SS',catL:'Sustainable Sites',diff:'adv',
+ q:'"Previously developed" land is defined in the LEED BD+C Reference Guide as land altered by paving, construction, or land use that would typically have required regulatory permitting. Which of the following is NOT considered "previously developed"?',
+ opts:['A site that previously had a building that was demolished 15 years ago','A city park with manicured landscaping, a playground, and constructed features','Land that has only been cleared and graded with no additional improvements','A parking lot that was paved 20 years ago'],
+ ans:2,ref:'Getting Started · Previous Development definitions p.15',
+ exp:'Land that has only been cleared or graded (with no additional improvements beyond clearing) is NOT considered previously developed. Agricultural land, forestry land, and preserved natural areas are also not previously developed regardless of prior human activity. A site with demolished buildings is still previously developed even if cleared. Parks with constructed features (playgrounds, manicured landscaping) ARE previously developed.',
+ std:'Getting Started — Previous Development definition'},
+
+{id:65,cat:'MR',catL:'Materials & Resources',diff:'adv',
+ q:'Under the LEED BD+C reference guide, when calculating recycled content for credit compliance, post-consumer recycled content is valued at _______ of pre-consumer recycled content.',
+ opts:['The same value — both count equally at 100%','Half the value — pre-consumer = 2× post-consumer','Twice the value — post-consumer = 2× pre-consumer','Post-consumer must constitute 50% of total recycled content'],
+ ans:0,ref:'MR Overview p.468; MR Credit Building Product Disclosure EPD',
+ exp:'In LEED v4 BD+C, post-consumer and pre-consumer recycled content are both valued equally — at 100% of their respective percentages. This is a change from LEED 2009 where post-consumer was valued at twice pre-consumer. Under the new EPD and HPD credit structure, recycled content is one of many qualifying sustainability criteria used in product valuation calculations.',
+ std:'MR Credit Building Product Disclosure — Sourcing of Raw Materials'},
+
+{id:66,cat:'EA',catL:'Energy & Atmosphere',diff:'adv',
+ q:'The Basis of Design (BOD) document is created by which party and initiated in which project phase?',
+ opts:['By the CxA, starting in predesign','By the design team as their technical interpretation of the OPR, starting in schematic design','By the owner, at the same time as the OPR','By the general contractor, during construction documents phase'],
+ ans:1,ref:'EA Prerequisite Fundamental Commissioning · Step 2 p.324',
+ exp:'The BOD (Basis of Design) is created by the design team as their technical interpretation of the OPR. It starts during the schematic design phase and is updated throughout design and construction. Any revisions to the OPR must also be reflected in the BOD so both documents align. The BOD must cover all systems to be commissioned PLUS the building envelope.',
+ std:'EA Prerequisite Fundamental Commissioning — Basis of Design'},
+
+{id:67,cat:'WE',catL:'Water Efficiency',diff:'adv',
+ q:'The WE Credit Water Metering (separate from the Prerequisite) awards 1 point for sub-metering at least how many water end-use systems?',
+ opts:['1 system','2 systems','3 systems','5 systems'],
+ ans:1,ref:'WE Credit Water Metering · p.311',
+ exp:'The credit awards 1 point for installing permanent sub-meters on at least 2 of the following water end-use systems: irrigation, indoor plumbing fixtures, domestic hot water, boilers, cooling towers, reclaimed water, or other high-use processes. This is separate from the prerequisite which requires only whole-building metering. Sub-meter data must be logged and accessible for ongoing monitoring.',
+ std:'WE Credit Water Metering'},
+
+{id:68,cat:'EQ',catL:'Indoor Environmental Quality',diff:'adv',
+ q:'For the EQ Credit Quality Views, what is the minimum distance from glazing that qualifies as a "quality view" to the outdoors?',
+ opts:['3 m (10 ft)','7.5 m (25 ft)','10 m (33 ft)','15 m (50 ft)'],
+ ans:1,ref:'EQ Credit Quality Views · p.739',
+ exp:'Quality views require a direct line of sight to the outdoor environment via clear glass from regularly occupied floor areas. The view must look to the outdoors at a distance of at least 7.5 m (25 ft) from the glass. At least 75% of regularly occupied floor area must have quality views to earn this 1-point credit. Views through interior glazing (glass partitions) can count if daylight passes through 2 glazed surfaces maximum.',
+ std:'EQ Credit Quality Views'},
+
+{id:69,cat:'IP',catL:'Integrative Process',diff:'adv',
+ q:'What are the three phases of the Integrative Process as defined in the LEED BD+C Reference Guide?',
+ opts:['Planning, Design, Construction','Discovery; Design and Construction; Occupancy, Operations, and Performance Feedback','Pre-Design, Schematic Design, Construction Documents','Analysis, Implementation, Verification'],
+ ans:1,ref:'Getting Started · Taking an Integrative Approach p.11',
+ exp:'The three phases are: (1) Discovery — expanded predesign phase involving preliminary energy/water analysis before SD. Most important phase. (2) Design and Construction — begins at schematic design, implements findings from discovery. (3) Occupancy, Operations, and Performance Feedback — focuses on measuring actual performance vs targets and implementing corrective actions.',
+ std:'IP ANSI Consensus National Standard Guide 2.0'},
+
+{id:70,cat:'MR',catL:'Materials & Resources',diff:'adv',
+ q:'Under the Tenant Sales and Lease Agreement provisions for LEED BD+C Core & Shell, when is a signed tenant lease agreement required as documentation?',
+ opts:['For all Core & Shell projects as standard practice','Only when the project team wishes to earn additional credits beyond what is within their direct construction scope','For any credit in the EQ category','When the project registers under the Campus program'],
+ ans:1,ref:'Getting Started · Tenant Sales and Lease Agreement p.15',
+ exp:'A binding tenant lease agreement is only required when a Core & Shell project aims to earn credits or thresholds BEYOND the construction scope they directly control — i.e., credits that will be completed by future tenants. The agreement must be signed by the future tenant and include specific technical credit requirements. Unsigned sample leases are NOT acceptable.',
+ std:'Getting Started — Tenant Sales and Lease Agreement (Core & Shell)'},
+
+{id:71,cat:'WE',catL:'Water Efficiency',diff:'calc',
+ q:'For calculating the water efficiency baseline, what is the EPAct 1992 baseline for a showerhead?',
+ opts:['2.0 gpm at 80 psi per stall','2.2 gpm at 60 psi per stall','2.5 gpm at 80 psi per shower stall','3.0 gpm at 80 psi per stall'],
+ ans:2,ref:'WE Prerequisite Indoor Water Use Reduction · Table 1 p.268',
+ exp:'The EPAct 1992 baseline for showerheads is 2.5 gpm (9.5 lpm) at 80 psi (550 kPa) per shower stall. The prescriptive path maximum is 2.00 gpm (7.6 lpm) — a 20% reduction. WaterSense labels are available for showerheads. All newly installed showerheads that are WaterSense-eligible must carry the WaterSense label.',
+ std:'EPAct 1992; Table 1 WE Prerequisite Indoor Water Use Reduction'},
+
+{id:72,cat:'SS',catL:'Sustainable Sites',diff:'adv',
+ q:'For the Light Pollution Reduction credit, exterior lighting must comply with which standards to demonstrate compliance with BUG rating requirements?',
+ opts:['ASHRAE 90.1-2010 exterior LPD requirements only','IES/IDA Model Lighting Ordinance (MLO) requirements by lighting zone','LEED-specific photometric calculation tables','EPA SmartWay lighting programme'],
+ ans:1,ref:'SS Credit Light Pollution Reduction · p.207',
+ exp:'The credit references the IES/IDA Model Lighting Ordinance (MLO) for BUG (Backlight, Uplight, Glare) rating requirements by lighting zone (LZ0–LZ4 from rural to high commercial). Fixtures must have appropriate BUG ratings based on the project\'s designated lighting zone. The credit also limits uplight to reduce sky glow and requires automatic shut-off controls after business hours.',
+ std:'IES/IDA Model Lighting Ordinance — BUG ratings and lighting zones'},
+
+{id:73,cat:'EA',catL:'Energy & Atmosphere',diff:'adv',
+ q:'Which of the following heating and cooling equipment types are NOT required to be commissioned under EA Prerequisite Fundamental Commissioning?',
+ opts:['Chilled water central plant and cooling towers','Split-system DX rooftop units','Process equipment and manufacturing machinery','Heat pump systems and air-source condensers'],
+ ans:2,ref:'EA Prerequisite Fundamental Commissioning · Further Explanation p.326',
+ exp:'Process equipment is specifically listed as NOT required to be commissioned under the prerequisite (though it may be added at the owner\'s request). All other energy-consuming building HVAC&R equipment must be commissioned: chillers, cooling towers, boilers, heat pumps, fan coil units, VAV systems, DOAS units, rooftop units, etc.',
+ std:'EA Prerequisite Fundamental Commissioning — Systems to be commissioned'},
+
+{id:74,cat:'MR',catL:'Materials & Resources',diff:'adv',
+ q:'The MR Credit Design for Flexibility is applicable to which LEED BD+C project type(s)?',
+ opts:['All BD+C project types equally','New Construction, Core & Shell, and Retail only','Schools and Healthcare only — because these buildings have long service lives','Core & Shell and Healthcare only'],
+ ans:2,ref:'MR Credit Design for Flexibility · p.577',
+ exp:'The MR Credit Design for Flexibility is applicable specifically to Schools and Healthcare rating system adaptations. These building types have very long service lives and frequently undergo significant renovation and reprogramming, making adaptable design strategies particularly valuable for reducing future material waste.',
+ std:'MR Credit Design for Flexibility (Schools, Healthcare)'},
+
+{id:75,cat:'EQ',catL:'Indoor Environmental Quality',diff:'adv',
+ q:'For the EQ Credit Acoustic Performance (separate from the prerequisite), which of the following is correct regarding the background noise level requirement for offices?',
+ opts:['≤35 dBA for all office types','≤40 dBA using the NC (Noise Criteria) method for typical offices','≤45 dBA with a minimum NC-30 rating','≤50 dBA for open offices'],
+ ans:1,ref:'EQ Credit Acoustic Performance · p.757',
+ exp:'For typical offices, the background noise must not exceed NC-35 (or RC-35) which corresponds to approximately 40 dBA. Private offices require stricter limits (NC-30 / 35 dBA). Conference rooms and executive offices are similar. The standard referenced is ANSI/ASA S12.60-2010 combined with ASHRAE acoustic design guidelines.',
+ std:'EQ Credit Acoustic Performance; ANSI/ASA S12.60-2010'},
+
+{id:76,cat:'EA',catL:'Energy & Atmosphere',diff:'calc',
+ q:'A commissioning team is testing 47 identical VAV terminal units. Using the "10 or 10%" sampling rule for functional performance testing, what is the minimum number of units that must be tested?',
+ opts:['4 units (rounding up from 4.7)','5 units (10% rounded up)','10 units (10 > 4.7, so the minimum of 10 applies)','All 47 units — VAV boxes are not eligible for sampling'],
+ ans:2,ref:'EA Prerequisite Fundamental Commissioning · Step 12 p.325',
+ exp:'The sampling rate is "10 or 10%, whichever is GREATER." 10% of 47 = 4.7 units. Since 10 > 4.7, the minimum is 10 units that must be tested. If there were, say, 150 identical units: 10% = 15 units > 10, so 15 would be tested. Sampling is only permitted for functional testing of identical units — construction checklists require 100% completion.',
+ std:'EA Prerequisite Fundamental Commissioning — 10 or 10% sampling rule'},
+
+{id:77,cat:'WE',catL:'Water Efficiency',diff:'adv',
+ q:'Under the WE Prerequisite Building-Level Water Metering, what specific post-occupancy commitment does the project owner make?',
+ opts:['Publish monthly water reports on LEED Online for 3 years','Share whole-building water consumption data with USGBC/GBCI for 5 years beginning with occupancy, or until the building changes ownership','Maintain water meter calibration within ±5% accuracy for 10 years','Achieve a 20% additional water reduction within 3 years of occupancy'],
+ ans:1,ref:'WE Prerequisite Building-Level Water Metering · p.283',
+ exp:'The owner must commit to sharing whole-building water consumption data with USGBC/GBCI for 5 years beginning with occupancy, OR until the building changes ownership — whichever comes first. This is also aligned with MPR 6 (must commit to sharing whole-building energy and water data). This data supports USGBC\'s research on building performance.',
+ std:'WE Prerequisite Building-Level Water Metering; MPR 6'},
+
+{id:78,cat:'MR',catL:'Materials & Resources',diff:'adv',
+ q:'For the MR Credit Building Life-Cycle Impact Reduction Option 4 (Whole-Building Life-Cycle Assessment), what minimum improvement must the project demonstrate compared to a reference building?',
+ opts:['5% reduction in at least 2 of 6 impact categories','10% reduction in at least 3 of 6 impact categories','15% reduction in at least 4 of 6 impact categories','20% reduction across all 6 impact categories'],
+ ans:1,ref:'MR Credit Building Life-Cycle Impact Reduction · Option 4 p.509',
+ exp:'The whole-building LCA option requires demonstrating at least a 10% reduction in at least 3 of the following 6 impact categories compared to a reference building of comparable size, function, and service life: global warming potential, depletion of stratospheric ozone layer, acidification of land/water sources, eutrophication, formation of tropospheric ozone, and depletion of nonrenewable energy resources.',
+ std:'ISO 14044; MR Credit Building Life-Cycle Impact Reduction — Option 4 LCA'},
+
+{id:79,cat:'LT',catL:'Location & Transportation',diff:'adv',
+ q:'For the Bicycle Facilities credit, which occupant type is explicitly excluded from calculations for school projects?',
+ opts:['Part-time teachers','Administrative staff','Students in grade 3 (age 8) and younger','Students in grades 9-12'],
+ ans:2,ref:'Getting Started · Table 1 Occupancy types p.19',
+ exp:'Per the occupancy guidance table, for the LT Credit Bicycle Facilities in Schools projects: students in grade 3 (age 8) or younger are excluded from the regular building occupants count for this specific credit. This reflects the safety consideration that young children are not expected to bicycle to school independently.',
+ std:'LT Credit Bicycle Facilities — Schools variation; Getting Started Table 1'},
+
+{id:80,cat:'SS',catL:'Sustainable Sites',diff:'adv',
+ q:'What is the minimum percentage of the total site area (excluding building footprint) that must be designated as open space to achieve the Open Space credit?',
+ opts:['20%','25%','30%','40%'],
+ ans:2,ref:'SS Credit Open Space · p.177',
+ exp:'The Open Space credit requires providing outdoor space equal to at least 30% of the total site area (including the building footprint in the denominator). Of that qualifying outdoor space, at least 25% must be vegetated. Pedestrian-oriented hardscape, playing fields, wetlands, and native plantings all count toward the outdoor space requirement.',
+ std:'SS Credit Open Space'},
+
+{id:81,cat:'EA',catL:'Energy & Atmosphere',diff:'calc',
+ q:'What is the minimum percentage of on-site renewable energy production required to earn 1 point under the EA Credit Renewable Energy Production?',
+ opts:['1% of annual energy cost','2% of annual energy cost','3% of annual energy cost','5% of annual energy cost'],
+ ans:0,ref:'EA Credit Renewable Energy Production · p.429',
+ exp:'The Renewable Energy Production credit scale is: 1% annual energy cost from on-site renewables = 1 point; 3% = 2 points; 5% = 3 points. On-site renewables include: photovoltaic solar, solar thermal, wind, wave, tidal, low-impact hydro, geothermal, and biomass systems that meet qualification criteria. Off-site green power procurement is addressed separately under EA Credit Green Power and Carbon Offsets.',
+ std:'EA Credit Renewable Energy Production'},
+
+{id:82,cat:'EQ',catL:'Indoor Environmental Quality',diff:'adv',
+ q:'When CARB or SCAQMD VOC content limits apply to on-site wet-applied products, which compounds are specifically PROHIBITED from being intentionally added for North American projects?',
+ opts:['Toluene and xylene at any concentration','Methylene chloride and perchloroethylene','Acetone and ethanol in concentrations above 5%','Benzene and formaldehyde'],
+ ans:1,ref:'EQ Credit Low-Emitting Materials · p.661',
+ exp:'For projects in North America, methylene chloride and perchloroethylene may not be intentionally added in paints, coatings, adhesives, or sealants. If a product cannot be tested per the specified methods, testing must comply with ASTM D2369-10, ISO 11890-1, ASTM D6886-03, or ISO 11890-2.',
+ std:'EQ Credit Low-Emitting Materials — Prohibited compounds'},
+
+{id:83,cat:'IP',catL:'Integrative Process',diff:'adv',
+ q:'Per the LEED BD+C Getting Started, the process of aligning a project team around owner goals through goal-setting workshops and iterative analysis reflects which recommended first step?',
+ opts:['Submitting a preliminary LEED scorecard to GBCI for pre-approval','Initiating the Discovery Phase through research, analysis, and workshops — beginning before schematic design','Selecting the LEED Accredited Professional for the project team','Completing the MPR compliance check before any design work'],
+ ans:1,ref:'Getting Started · Devising a LEED Work Plan Steps 1-8 p.12',
+ exp:'Step 1 of the LEED Work Plan is to Initiate Discovery Phase — beginning initial research and analysis, holding a goal-setting workshop, and conducting iterative cycles of analysis and team workshops. This precedes rating system selection (Step 2), MPR check (Step 3), goal establishment (Step 4), and LEED scorecard development (Step 6). The integrative process is explicitly recommended as the foundation of LEED success.',
+ std:'Getting Started — LEED Work Plan Steps 1-11'},
+
+{id:84,cat:'MR',catL:'Materials & Resources',diff:'calc',
+ q:'A product costs $200 and contains steel (60% of weight, 45% recycled content) and plastic (40% of weight, 10% recycled content). What is the total recycled content value contributing to MR credit compliance?',
+ opts:['$50.00','$54.00','$62.00','$44.00'],
+ ans:1,ref:'MR Overview · Table 1 Assembly calculation p.472',
+ exp:'Steel contribution: $200 × 60% × 45% = $54.00. Plastic contribution: $200 × 40% × 10% = $8.00. Total = $54 + $8 = $62. Wait — re-check: $200×0.6×0.45 = $54.00 (steel); $200×0.4×0.10 = $8.00 (plastic); total = $62.00. Select the closest. The calculation formula is: Product value = Total cost × (% component by weight) × (% meeting sustainability criteria).',
+ ans:2,exp:'Steel: $200 × 60% weight × 45% recycled = $54.00. Plastic: $200 × 40% weight × 10% recycled = $8.00. Total contributing value = $62.00.',
+ std:'MR Overview — Determining material contributions of an assembly'},
+
+{id:85,cat:'SS',catL:'Sustainable Sites',diff:'adv',
+ q:'Which of the following correctly describes a "brownfield" site eligible for the High Priority Site credit?',
+ opts:['Any site that was previously used for industrial purposes','Real property where expansion, redevelopment, or reuse may be complicated by the presence or potential presence of a hazardous substance, pollutant, or contaminant','Any contaminated site that has been fully remediated and cleared for development','Sites located in Superfund NPL (National Priorities List) areas only'],
+ ans:1,ref:'LT Credit High Priority Site · p.71',
+ exp:'A brownfield is defined as real property where expansion, redevelopment, or reuse may be complicated by the presence (or potential presence) of a hazardous substance, pollutant, or contaminant. The site need not be confirmed contaminated — the perception or potential is sufficient. A Phase I ESA per ASTM E1527-05 typically identifies whether a site qualifies as a brownfield.',
+ std:'EPA Brownfields definition; ASTM E1527-05'},
+
+{id:86,cat:'EA',catL:'Energy & Atmosphere',diff:'core',
+ q:'What is the total maximum number of points available in the Energy & Atmosphere category for LEED BD+C New Construction?',
+ opts:['28 points','33 points','38 points','42 points'],
+ ans:1,ref:'Getting Started · Credit Attribute Table; EA Overview p.319',
+ exp:'Energy & Atmosphere has 33 total possible points in LEED BD+C NC — the highest of all credit categories. Breakdown: Enhanced Commissioning (6 pts), Optimize Energy Performance (18 pts), Advanced Energy Metering (1 pt), Demand Response (2 pts), Renewable Energy Production (3 pts), Enhanced Refrigerant Management (1 pt), Green Power & Carbon Offsets (2 pts) = 33 pts.',
+ std:'EA Overview p.319'},
+
+{id:87,cat:'EQ',catL:'Indoor Environmental Quality',diff:'adv',
+ q:'Enhanced Indoor Air Quality Strategies (EQ Credit, Option 1) for mechanically ventilated spaces includes which of the following requirements?',
+ opts:['Installing HEPA filtration on all air handlers','Installing permanent entryway systems at least 10 feet (3 m) long in the primary direction of travel, AND preventing contamination between different occupancy zones','Requiring individual air purifiers at every workstation','Providing 50% more outdoor air than ASHRAE 62.1 minimum'],
+ ans:1,ref:'EQ Credit Enhanced Indoor Air Quality Strategies · p.645',
+ exp:'Option 1 for mechanically ventilated buildings requires: (1) Entryway systems (walk-off mats, grilles, or grates) ≥10 ft (3 m) long in the primary direction of travel to capture dust and particulates, AND (2) Regularly occupied areas with hazardous gases or chemicals must maintain negative pressure relative to adjacent areas and have isolated exhaust directly outdoors. Option 2 (naturally ventilated) requires CIBSE AM10 compliance.',
+ std:'EQ Credit Enhanced Indoor Air Quality Strategies — Option 1'},
+
+{id:88,cat:'WE',catL:'Water Efficiency',diff:'adv',
+ q:'Under WE Prerequisite Outdoor Water Use Reduction, which outdoor condition automatically satisfies the prerequisite without any calculation?',
+ opts:['Use of 100% drought-tolerant plants','Use of automated irrigation systems with soil moisture sensors','Having no permanent irrigation system installed','Demonstrating a 50% reduction from the baseline'],
+ ans:2,ref:'WE Prerequisite Outdoor Water Use Reduction · p.259',
+ exp:'A project with NO PERMANENT IRRIGATION SYSTEM automatically satisfies the WE Outdoor Water Use Reduction prerequisite without any calculation. This is the simplest compliance path. Temporary irrigation for plant establishment (used for no more than 1–2 years after installation) is permitted — the key is that no permanent, in-ground or automated system remains.',
+ std:'WE Prerequisite Outdoor Water Use Reduction'},
+
+{id:89,cat:'LT',catL:'Location & Transportation',diff:'calc',
+ q:'Under LEED occupancy calculation rules, a building has 80 full-time employees and 12 part-time employees who each work 5 hours per day. What is the total FTE occupant count?',
+ opts:['87.5 FTE','92.0 FTE','87.0 FTE','80.0 FTE'],
+ ans:0,ref:'Getting Started · Occupancy Equation 1 p.17',
+ exp:'FTE = Full-time employees + (Σ daily part-time employee hours ÷ 8). FTE = 80 + (12 × 5 ÷ 8) = 80 + (60 ÷ 8) = 80 + 7.5 = 87.5 FTE. The standard 8-hour occupancy period is always used as the denominator.',
+ std:'Getting Started — FTE calculation Equation 1'},
+
+{id:90,cat:'MR',catL:'Materials & Resources',diff:'adv',
+ q:'The MR Credit PBT Source Reduction — Lead, Cadmium, and Copper (applicable to New Construction and Schools) requires that plumbing fitting lead content meet which standard?',
+ opts:['NSF 61 Section 9','NSF/ANSI 372 (Drinking Water System Components — Lead Content) and NSF 61','California Proposition 65 threshold only','ASHRAE 189.1 plumbing requirements'],
+ ans:1,ref:'MR Credit PBT Source Reduction — Lead Cadmium Copper · p.559',
+ exp:'The credit requires that all plumbing fittings, fixtures, pipes and pipe fittings, and plumbing devices meet NSF/ANSI 372 (Drinking Water System Components — Lead Content, which replaced NSF 61 Section 9) AND NSF 61 (Drinking Water System Components — Health Effects). This credit specifically addresses the health risk of lead leaching into drinking water from plumbing components.',
+ std:'NSF/ANSI 372; NSF 61 — Drinking Water System Components'},
+
+{id:91,cat:'SS',catL:'Sustainable Sites',diff:'adv',
+ q:'For the Site Master Plan credit (applicable to Core & Shell and Schools), what is the minimum period the master plan must cover?',
+ opts:['5 years','10 years','20 years','The building design life'],
+ ans:1,ref:'SS Credit Site Master Plan · p.225',
+ exp:'The Site Master Plan credit requires developing a long-term site master plan covering at minimum 10 years. The plan must demonstrate that future development on the site will preserve sustainable features, maintain at least the same level of performance for credits earned at certification, and protect or restore habitat.',
+ std:'SS Credit Site Master Plan (Core & Shell, Schools)'},
+
+{id:92,cat:'EA',catL:'Energy & Atmosphere',diff:'adv',
+ q:'For EA Credit Advanced Energy Metering, sub-meters must be installed for each energy end use representing what minimum percentage of the total annual consumption?',
+ opts:['5%','10%','15%','20%'],
+ ans:1,ref:'EA Credit Advanced Energy Metering · p.413',
+ exp:'The credit requires installing sub-meters for each energy end use that represents at least 10% of the total annual consumption for any given energy type (electricity, natural gas, chilled water, etc.). Additionally, all sub-metering data must be logged at 1-hour or shorter intervals, with remote access capability and at least 36 months of data storage. This is the Advanced Metering credit — beyond the Prerequisite (whole-building only).',
+ std:'EA Credit Advanced Energy Metering'},
+
+{id:93,cat:'IN',catL:'Innovation',diff:'core',
+ q:'Under the LEED AP Innovation credit, if a project has 3 LEED APs with specialty appropriate to the project type as principal team members, how many Innovation points does the project earn?',
+ opts:['1 point','2 points','3 points','0 points — LEED APs must formally apply for the credit'],
+ ans:0,ref:'IN Credit LEED Accredited Professional · p.785',
+ exp:'Only 1 Innovation point is available for LEED AP(s) regardless of how many LEED APs are on the team. The requirement is that at least ONE principal participant of the project team holds a LEED AP credential with a specialty appropriate to the project type (e.g., LEED AP BD+C for a New Construction project). Having multiple LEED APs is beneficial but does not earn additional points.',
+ std:'IN Credit LEED Accredited Professional'},
+
+{id:94,cat:'RP',catL:'Regional Priority',diff:'adv',
+ q:'Regional Priority credits are determined primarily by which factor?',
+ opts:['The LEED certification level being pursued (Certified, Silver, Gold, Platinum)','The project\'s geographic location (zip code in the US, or geographic coordinates internationally)','The building type and occupancy classification','The project team\'s stated sustainability priorities'],
+ ans:1,ref:'RP Credit Regional Priority · p.791',
+ exp:'Regional Priority credits are assigned based on the project\'s geographic location — specifically the zip code for US projects. Local USGBC chapters identify 6 credits that address their region\'s specific environmental priorities (e.g., water conservation in arid climates, stormwater management in flood-prone areas). Projects earn RP bonus points by achieving those specific regionally-prioritised credits.',
+ std:'RP Credit Regional Priority — geographic determination'},
+
+{id:95,cat:'SS',catL:'Sustainable Sites',diff:'adv',
+ q:'The SS Credit Joint Use of Facilities is applicable to which LEED BD+C project types?',
+ opts:['New Construction and Core & Shell only','Schools only','Schools and Healthcare only','All BD+C project types including New Construction'],
+ ans:1,ref:'SS Credit Joint Use of Facilities · p.249',
+ exp:'The Joint Use of Facilities credit is applicable exclusively to LEED BD+C: Schools. It recognises schools that make facilities (gymnasium, auditorium, classrooms, sports fields) available to the surrounding community outside of school hours. This credit reflects the unique community-anchor role of schools and their opportunity to provide shared public benefits.',
+ std:'SS Credit Joint Use of Facilities (Schools only)'},
+
+{id:96,cat:'EA',catL:'Energy & Atmosphere',diff:'adv',
+ q:'When a Healthcare project teams pursues EA Prerequisite Fundamental Commissioning, which additional scope item is unique to Healthcare compared to other BD+C project types?',
+ opts:['Full envelope commissioning is mandatory (not optional) for Healthcare','The CxA must be an independent third party regardless of project size for Healthcare','Healthcare projects with cooling loads under 600 kW may use a CxA from the design team','Commissioning must be completed before certificate of occupancy in all Healthcare projects'],
+ ans:2,ref:'EA Prerequisite Fundamental Commissioning · Data Centers section p.322',
+ exp:'For Healthcare (and Data Centers) with computer/critical equipment room peak cooling loads less than 600 kW (2,000,000 Btu/h), the CxA may be a qualified employee of the design or construction team — a special exception. For standard Healthcare projects with no large cooling loads, normal CxA independence rules apply. This exception acknowledges the specialised knowledge needed for critical facilities.',
+ std:'EA Prerequisite Fundamental Commissioning — Healthcare/Data Center exception'},
+
+{id:97,cat:'WE',catL:'Water Efficiency',diff:'adv',
+ q:'The WE Credit Cooling Tower Water Use (2 points) is relevant to projects with which equipment type?',
+ opts:['Solar thermal hot water systems','Cooling towers and evaporative condensers for building cooling systems','Geothermal heat exchange systems','Rainwater harvesting cisterns'],
+ ans:1,ref:'WE Credit Cooling Tower Water Use · p.305',
+ exp:'This credit specifically applies to projects that have cooling towers or evaporative condensers as part of their cooling systems. The credit requires conducting a water analysis to optimise cycles of concentration (CoC), minimise blowdown, and use alternative water sources where possible. It rewards projects for reducing potable water consumption in these high-water-use HVAC system types.',
+ std:'WE Credit Cooling Tower Water Use'},
+
+{id:98,cat:'EQ',catL:'Indoor Environmental Quality',diff:'adv',
+ q:'For the EQ Credit Interior Lighting, earning both available points requires achieving which TWO conditions?',
+ opts:['CRI ≥80 for all lamps AND automatic daylight dimming in perimeter zones','Individual lighting controls for ≥90% of individual occupants (1 pt) AND multi-zone controls for all shared spaces (1 pt)','Lighting power density 25% below ASHRAE 90.1-2010 (1 pt) AND occupancy sensors on all circuits (1 pt)','Task lighting at every workstation (1 pt) AND dimmable ballasts on 100% of fixtures (1 pt)'],
+ ans:1,ref:'EQ Credit Interior Lighting · p.711',
+ exp:'Two separate points are available: (1) Individual lighting controls for at least 90% of individual occupants — enabling adjustment of light levels and direction; (2) Multi-zone control (separate at minimum for each type of space: conference rooms, copy rooms, break rooms, storage rooms) for all shared multi-occupant spaces. Task tuning and demand response may also contribute depending on the option pursued.',
+ std:'EQ Credit Interior Lighting'},
+
+{id:99,cat:'MR',catL:'Materials & Resources',diff:'core',
+ q:'Which of the following describes the "Campus Approach" in LEED vs the "Group Approach"?',
+ opts:['Campus approach = multiple buildings share one LEED certification; Group approach = each building gets its own certification','Campus approach = each building earns its own separate certification while sharing master site documentation; Group approach = all buildings share one certification','Campus approach is only for hospitals; Group approach is only for schools','They are interchangeable terms for the same certification programme'],
+ ans:1,ref:'Getting Started · Campus Projects p.10',
+ exp:'Campus Approach: multiple buildings share a single location and site attributes but each achieves its OWN separate LEED certification. Shared attributes (eligible credits) are documented once at master site level. Group Approach: multiple substantially similar buildings in a single location certify as ONE project under a single shared certification — they may pool resources or each must document individually depending on the credit.',
+ std:'Getting Started — Campus Projects section'},
+
+{id:100,cat:'EA',catL:'Energy & Atmosphere',diff:'calc',
+ q:'A new office building\'s whole-building energy model shows a 22% improvement over the ASHRAE 90.1-2010 energy cost baseline. Approximately how many EA Optimize Energy Performance points does this earn?',
+ opts:['4 points','6 points','8 points','10 points'],
+ ans:2,ref:'EA Credit Optimize Energy Performance · p.405',
+ exp:'The EA Optimize Energy Performance credit scales from 1 point (6% better than ASHRAE 90.1-2010) to 18 points (≥50% better). At 22% improvement, the project earns approximately 8 points on the published point scale. The scale rewards each incremental 2–3% improvement with approximately 1 additional point in the mid-range. Always verify against the specific rating system\'s point table.',
+ std:'ASHRAE 90.1-2010 Appendix G; EA Credit Optimize Energy Performance point scale'},
+];
+
+// ═══════════════════════════════════════════════════════
+// FIX: one question has duplicate ans key (id:84 had double)
+// ═══════════════════════════════════════════════════════
+QS[83].ans = 2; // $62 is correct
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let S = {
+  name:'', org:'', mode:'full',
+  qs:[], answers:{}, flags:new Set(),
+  cur:0, timer:null, timeLeft:0,
+  tStart:null, tEnd:null, practice:false
+};
+
+function pickMode(el, mode) {
+  document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  S.mode = mode;
+  document.getElementById('cat-sel-wrap').style.display = mode === 'cat' ? 'block' : 'none';
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
   }
+  return a;
+}
 
-  // Recycled Steel
-  const steelRecycle = parseInt(document.getElementById('pSteelRecycle').value);
-  const steelRecycleBonus = (steelRecycle - 20) * 0.5; // 0.5 kg reduction per % above 20%
-  if (struct !== 'mass_timber' && struct !== 'masonry') {
-    embodiedBase -= steelRecycleBonus;
+function startExam() {
+  const name = document.getElementById('inp-name').value.trim();
+  if (!name) { toast('Please enter your name'); return; }
+  S.name = name;
+  S.org  = document.getElementById('inp-org').value.trim();
+  S.answers = {}; S.flags = new Set(); S.cur = 0;
+  S.tStart = new Date();
+  S.practice = (S.mode === 'practice');
+
+  let pool = shuffle(QS);
+  if (S.mode === 'cat') {
+    const cat = document.getElementById('cat-sel').value;
+    if (cat !== 'all') pool = pool.filter(q => q.cat === cat);
   }
+  const counts = {full:100, quick:30, cat:20, practice:40};
+  S.qs = pool.slice(0, Math.min(counts[S.mode]||30, pool.length));
 
-  let totalEmbodied = Math.max(embodiedBase, 150) * area; // in kgCO2e
+  const times = {full:8400, quick:2700, cat:1200, practice:99999};
+  S.timeLeft = times[S.mode];
 
-  // ==========================================
-  // 2. OPERATIONAL CARBON (kgCO2e/m2/year)
-  // Baseline B6 (Operational Energy) & B1 (Refrigerants)
-  // ==========================================
-  
-  // Base EUI (kWh/m2/yr) based on Climate & Type
-  let eui = 140; // Commercial baseline
-  const pType = document.getElementById('pType').value;
-  const climate = document.getElementById('pClimate').value;
-  if (pType === 'residential') eui = 100;
-  if (pType === 'industrial') eui = 160;
-  
-  if (climate === 'hot_wet') eui += 20;
-  if (climate === 'hot_dry') eui += 35;
-  if (climate === 'mixed') eui += 0;
-  if (climate === 'cold') eui += 30;
-  if (climate === 'subarctic') eui += 55;
+  document.getElementById('sb-name').textContent = name;
+  const modeL = {full:'LEED AP BD+C · Full Exam (100Q)',quick:'LEED AP BD+C · Quick Test (30Q)',cat:'LEED AP BD+C · Category',practice:'LEED AP BD+C · Practice Mode'};
+  document.getElementById('sb-mode').textContent = modeL[S.mode];
+  document.getElementById('prog-total').textContent = 'of '+S.qs.length;
 
-  // HVAC Efficiency Adjustments
-  const hvac = document.getElementById('pHvac').value;
-  if (hvac === 'high') eui *= 0.78;
-  if (hvac === 'passive') eui *= 0.55;
+  buildNav();
+  renderQ(0);
+  showPg('pg-exam');
+  startTimer();
+}
 
-  // Envelope Performance Adjustments
-  const envelope = document.getElementById('pEnvelope').value;
-  if (envelope === 'improved') eui *= 0.90;
-  if (envelope === 'high_perf') eui *= 0.78;
+function buildNav() {
+  const g = document.getElementById('q-nav-grid');
+  g.innerHTML = '';
+  S.qs.forEach((q,i) => {
+    const d = document.createElement('div');
+    d.className = 'qn';
+    d.id = 'qn-'+i;
+    d.textContent = i+1;
+    d.onclick = () => renderQ(i);
+    g.appendChild(d);
+  });
+}
 
-  // Energy Source Adjustments (Grid factor applied later)
-  const energy = document.getElementById('pEnergy').value;
-  let operationalEmissions = eui * gridFactor; // kgCO2e/m2/yr
-  if (energy === 'mixed') operationalEmissions *= 0.60;
-  if (energy === 'ppa') operationalEmissions *= 0.05; // 5% for grid backup/embodied
-  if (energy === 'onsite') operationalEmissions *= 0.02; // Near zero
+function renderQ(idx) {
+  const q = S.qs[idx];
+  S.cur = idx;
+  const total = S.qs.length;
+  const answered = Object.keys(S.answers).length;
 
-  // Refrigerant Leakage (B1) - Major LEED EA Credit Focus
-  // Avg system leaks ~2-3% per year. High GWP refrigerants are massive contributors.
-  let refrigerantEmissions = 5; // kgCO2e/m2/yr baseline (R-410A)
-  const refrigerant = document.getElementById('pRefrigerant').value;
-  if (refrigerant === 'high') refrigerantEmissions = 6;
-  if (refrigerant === 'medium') refrigerantEmissions = 2;
-  if (refrigerant === 'low') refrigerantEmissions = 0.1;
-  operationalEmissions += refrigerantEmissions;
+  document.getElementById('q-num-tag').textContent = `Q ${idx+1} / ${total}`;
+  document.getElementById('q-cat-tag').textContent = q.catL;
 
-  // Water Energy Nexus & Hot Water
-  const fixtures = document.getElementById('pFixtures').value;
-  const hotWater = document.getElementById('pHotWater').value;
-  let waterEnergy = 8; // kWh/m2/yr for hot water & pumping
-  if (fixtures === 'low_flow') waterEnergy *= 0.7;
-  if (fixtures === 'ultra_low') waterEnergy *= 0.4;
+  const diffEl = document.getElementById('q-diff-tag');
+  const diffCls = {core:'diff-core',adv:'diff-adv',calc:'diff-calc'};
+  const diffL = {core:'Core Knowledge',adv:'Advanced Application',calc:'Calculation'};
+  diffEl.textContent = diffL[q.diff]||q.diff;
+  diffEl.className = 'q-diff-tag ' + (diffCls[q.diff]||'diff-core');
 
-  let hotWaterFactor = gridFactor; // Default electric
-  if (hotWater === 'gas') hotWaterFactor = 0.2; // Natural gas is lower carbon per kWh than coal grid, but high vs hydro
-  if (hotWater === 'heat_pump') waterEnergy *= 0.35; // COP of ~3.0
-  
-  operationalEmissions += (waterEnergy * hotWaterFactor);
+  const flagBtn = document.getElementById('flag-btn');
+  flagBtn.classList.toggle('flagged', S.flags.has(idx));
 
-  let totalOperational = operationalEmissions * area * life; // in kgCO2e
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('q-ref').innerHTML = '📖 ' + q.ref;
 
-  // ==========================================
-  // 3. TRANSPORT CARBON (kgCO2e/m2/year)
-  // Baseline B8 (Use Stage - Transport)
-  // ==========================================
-  let transportBase = 10; // kgCO2e/m2/yr for car-dependent suburban
-  const site = document.getElementById('pSite').value;
-  const parking = document.getElementById('pParking').value;
-  const mobility = document.getElementById('pMobility').value;
+  // Options
+  const list = document.getElementById('opts-list');
+  list.innerHTML = '';
+  const chosen = S.answers[idx];
+  const isAnswered = S.answers.hasOwnProperty(idx);
 
-  if (site === 'infill') transportBase *= 0.7;
-  if (site === 'transit') transportBase *= 0.35;
-  
-  if (parking === 'high') transportBase *= 1.2;
-  if (parking === 'reduced') transportBase *= 0.8;
-  if (parking === 'none') transportBase *= 0.5;
+  q.opts.forEach((opt, oi) => {
+    const li = document.createElement('li');
+    li.className = 'opt';
+    const letters = ['A','B','C','D'];
 
-  if (mobility === 'ev') transportBase *= 0.85;
-  if (mobility === 'full') transportBase *= 0.65;
+    if (isAnswered || S.practice) {
+      if (oi === q.ans) li.classList.add(isAnswered && chosen !== q.ans ? 'reveal' : 'correct');
+      else if (isAnswered && oi === chosen && chosen !== q.ans) li.classList.add('wrong');
+    } else if (isAnswered && oi === chosen) li.classList.add('sel');
 
-  let totalTransport = transportBase * area * life; // in kgCO2e
+    if (!isAnswered) li.onclick = () => selectAns(idx, oi);
 
-  // ==========================================
-  // 4. TOTALS, METRICS & BENCHMARKS
-  // ==========================================
-  let totalLifecycle = totalEmbodied + totalOperational + totalTransport;
-  let intensity = totalLifecycle / area; // kgCO2e/m2 over lifespan
-  
-  // WorldGBC & RIBA 2030 Targets: <500 kgCO2e/m2 lifecycle is 2030 target. <300 is 2025 advanced.
-  let grade = 'F'; let gradeClass = 'grade-f'; let leedLevel = 'Below LEED Certification';
-  if (intensity < 600) { grade = 'D'; gradeClass = 'grade-d'; leedLevel = 'LEED Certified'; }
-  if (intensity < 900) { grade = 'C'; gradeClass = 'grade-c'; leedLevel = 'LEED Silver'; }
-  if (intensity < 1200) { grade = 'B'; gradeClass = 'grade-b'; leedLevel = 'LEED Gold'; }
-  if (intensity < 1800) { grade = 'A'; gradeClass = 'grade-a'; leedLevel = 'LEED Platinum / WorldGBC 2030 Target'; }
+    const badge = (isAnswered || S.practice)
+      ? `<span class="opt-badge">${oi === q.ans ? '✓' : (isAnswered && oi === chosen && chosen !== q.ans ? '✗' : '')}</span>`
+      : '';
 
-  // ==========================================
-  // 5. DYNAMIC SUGGESTIONS
-  // ==========================================
-  let suggestions = [];
-  if (struct !== 'mass_timber') suggestions.push({ title: 'MR Credit: Evaluate Mass Timber or Hybrid Structures', text: 'Switching from concrete/steel to mass timber can reduce A1-A3 embodied carbon by 40%+ while safely sequestering carbon. Consider hybrid timber/steel cores for high-rises.' });
-  if (scm < 40 && struct !== 'mass_timber') suggestions.push({ title: 'MR Credit: Specify High SCM Concrete Mixes', text: 'Demand 40%+ Fly Ash or GGBS replacement for Portland Cement. This single specification change can slash structural embodied carbon by 20-30% with minimal cost impact.' });
-  if (refrigerant !== 'low') suggestions.push({ title: 'EA Credit: Mandate Low-GWP Refrigerants', text: 'High GWP refrigerants (R-410A) leaking at 2% annually cause immense hidden carbon. Specify R-32 or natural refrigerants (Propane/Ammonia) to drastically reduce B1 emissions.' });
-  if (energy !== 'onsite' && energy !== 'ppa') suggestions.push({ title: 'EA Credit: Secure Renewable Power', text: 'Procure a 10-year Green Power PPA or invest in on-site Solar PV + Battery. This immediately offsets the highest portion of operational B6 carbon.' });
-  if (hvac !== 'passive') suggestions.push({ title: 'EA Credit: Transition to Passive House Standards', text: 'Implement heat recovery ventilation (HRV), triple glazing, and extreme airtightness to reduce HVAC demand by up to 60%, aligning with LEED Optimize Energy Performance.' });
-  if (parking !== 'none' && parking !== 'reduced') suggestions.push({ title: 'LT Credit: Reduce Parking Capacity', text: 'Oversupplying parking encourages single-occupancy vehicle use. Reduce parking ratios below code minimums and invest in micro-mobility and transit subsidies.' });
-
-  // UPDATE UI
-  document.getElementById('resIntensity').textContent = Math.round(intensity).toLocaleString();
-  document.getElementById('resGrade').textContent = leedLevel;
-  document.getElementById('resGrade').className = 'grade-badge ' + gradeClass;
-  document.getElementById('resEmbodied').textContent = Math.round(totalEmbodied / 1000).toLocaleString() + ' tons';
-  document.getElementById('resOperational').textContent = Math.round(totalOperational / 1000).toLocaleString() + ' tons';
-  document.getElementById('resTransport').textContent = Math.round(totalTransport / 1000).toLocaleString() + ' tons';
-  document.getElementById('resLifeSpan').textContent = life;
-
-  const sugList = document.getElementById('suggestionList');
-  sugList.innerHTML = '';
-  suggestions.forEach(s => {
-    sugList.innerHTML += `<li class="suggestion-item"><div class="sug-icon">🌱</div><div class="sug-text"><h4>${s.title}</h4><p>${s.text}</p></div></li>`;
+    li.innerHTML = `<div class="opt-letter">${letters[oi]}</div><div class="opt-text">${opt}</div>${badge}`;
+    list.appendChild(li);
   });
 
-  // Store Data for PDF
-  window._carbonData = { 
-    area, life, intensity, grade, leedLevel, totalEmbodied, totalOperational, totalTransport, suggestions, 
-    formData: { 
-      name: document.getElementById('pName').value || 'Unnamed Project', 
-      climate: document.getElementById('pClimate').selectedOptions[0].text, 
-      grid: document.getElementById('pGrid').selectedOptions[0].text,
-      type: document.getElementById('pType').selectedOptions[0].text, 
-      struct: document.getElementById('pStruct').selectedOptions[0].text, 
-      hvac: document.getElementById('pHvac').selectedOptions[0].text,
-      energy: document.getElementById('pEnergy').selectedOptions[0].text,
-      refrigerant: document.getElementById('pRefrigerant').selectedOptions[0].text
-    } 
-  };
-
-  document.getElementById('form-section').style.display = 'none';
-  document.getElementById('results-section').classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-function resetForm() {
-  document.getElementById('form-section').style.display = 'block';
-  document.getElementById('results-section').classList.remove('active');
-  window.scrollTo(0, 0);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   PROFESSIONAL PDF REPORT GENERATION
-   ═══════════════════════════════════════════════════════════════ */
-function exportPDF() {
-  var d = window._carbonData;
-  if (!d) return;
-
-  var genDate = new Date().toLocaleDateString('en-GB', {day:'2-digit',month:'long',year:'numeric'});
-  var refNum = 'ADV-CO2-' + Date.now().toString(36).toUpperCase();
-
-  var sugHtml = '';
-  for (var i = 0; i < d.suggestions.length; i++) {
-    var s = d.suggestions[i];
-    sugHtml += '<div style="border-left:4px solid #22a355;padding:10px 14px;background:#eafaf1;border-radius:6px;margin-bottom:10px">' +
-      '<h4 style="margin:0 0 4px;font-size:11pt;color:#0a2e1a">' + s.title + '</h4>' +
-      '<p style="margin:0;font-size:10pt;color:#3d3830;line-height:1.4">' + s.text + '</p></div>';
+  // Explanation
+  const expBox = document.getElementById('exp-box');
+  if ((isAnswered || S.practice) && q.exp) {
+    expBox.classList.add('show');
+    document.getElementById('exp-text').textContent = q.exp;
+    document.getElementById('exp-std').textContent = '📐 Standard: ' + (q.std||q.ref);
+  } else {
+    expBox.classList.remove('show');
   }
 
-  var pdfHtml = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Carbon Report - ' + d.formData.name + '</title>' +
-  '<style>' +
-  '@page{size:A4;margin:16mm}' +
-  '*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}' +
-  'html,body{background:#fff!important;color:#000!important;font-family:Arial,Helvetica,sans-serif;font-size:10pt;line-height:1.5}' +
-  '.wm{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-size:72pt;font-weight:900;color:rgba(0,0,0,.035);letter-spacing:8px;text-transform:uppercase;pointer-events:none;z-index:0}' +
-  '.content{position:relative;z-index:1}' +
-  '.hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #000;padding-bottom:10px;margin-bottom:20px}' +
-  '.hdr-left{display:flex;align-items:flex-start;gap:12px}' +
-  '.hdr-logo{width:40px;height:40px;background:#000;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#22a355;font-size:18pt;font-weight:900;flex-shrink:0}' +
-  '.hdr-co{font-size:14pt;font-weight:700;letter-spacing:.5px}' +
-  '.hdr-sub{font-size:9pt;color:#555;margin-top:2px}' +
-  '.hdr-title{font-size:16pt;font-weight:900;letter-spacing:2px;text-transform:uppercase;border:2px solid #000;padding:4px 16px;display:inline-block}' +
-  '.hdr-meta{font-size:9pt;color:#555;margin-top:6px;text-align:right}' +
-  '.score-box{display:flex;gap:16px;margin-bottom:24px}' +
-  '.score-card{flex:1;border:2px solid #0a2e1a;border-radius:8px;padding:16px;text-align:center}' +
-  '.score-val{font-size:28pt;font-weight:700;color:#0a2e1a}' +
-  '.score-lbl{font-size:9pt;color:#555;text-transform:uppercase;letter-spacing:.5px}' +
-  '.caution{border:2px dashed #d63b3b;border-radius:8px;padding:12px;background:#fdeaea;text-align:center;margin-bottom:16px}' +
-  '.caution-txt{font-size:10pt;font-weight:700;color:#d63b3b}' +
-  '.caution-sub{font-size:8pt;color:#7a7268;margin-top:4px}' +
-  '.print-caution{border:2px dashed #22a355;border-radius:8px;padding:12px;background:#eafaf1;text-align:center;margin-bottom:20px}' +
-  '.print-txt{font-size:10pt;font-weight:700;color:#145a30}' +
-  'table{width:100%;border-collapse:collapse;font-size:10pt;margin-bottom:16px}' +
-  'th{text-align:left;padding:8px;background:#0a2e1a!important;color:#fff!important;font-size:8pt;letter-spacing:.5px;text-transform:uppercase}' +
-  'td{padding:6px 8px;border-bottom:1px solid #eee}' +
-  '.ftr{position:fixed;bottom:0;left:0;right:0;padding:6px 16mm;border-top:1px solid #ccc;display:flex;justify-content:space-between;font-size:8pt;color:#666;background:#fff!important}' +
-  '.ftr-b{font-weight:700;color:#000}' +
-  '@media print{html,body{background:#fff!important;color:#000!important}th{background:#0a2e1a!important;color:#fff!important}.caution,.print-caution,.score-card{background:#eafaf1!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.ftr{background:#fff!important}}' +
-  '</style></head><body>' +
+  // Progress
+  document.getElementById('prog-ans').textContent = Object.keys(S.answers).length + ' answered';
 
-  '<div class="wm">PRODIFY</div><div class="content">' +
+  // Nav dots
+  document.querySelectorAll('.qn').forEach((d, i) => {
+    d.classList.remove('curr','ans','flag');
+    if (i === idx) d.classList.add('curr');
+    else if (S.answers.hasOwnProperty(i)) d.classList.add('ans');
+    if (S.flags.has(i)) d.classList.add('flag');
+  });
 
-  '<div class="hdr"><div class="hdr-left"><div class="hdr-logo">P</div><div><div class="hdr-co">Pre-Construction Carbon Impact Report</div><div class="hdr-sub">Advanced LEED v4.1 Aligned Assessment - Prodify Green</div></div></div><div style="text-align:right"><div class="hdr-title">REPORT</div><div class="hdr-meta">Ref: <b>' + refNum + '</b><br>Date: <b>' + genDate + '</b></div></div></div>' +
+  // Progress bar
+  const pct = (answered / total) * 100;
+  document.getElementById('prog-fill').style.width = pct + '%';
 
-  '<div class="print-caution"><div class="print-txt">GO GREEN, THINK GREEN: Please consider the environment before printing this document.</div></div>' +
+  // Next/Submit button
+  const btnNext = document.getElementById('btn-next');
+  if (idx === total - 1) {
+    btnNext.textContent = 'Submit Exam'; btnNext.className = 'btn-nav btn-submit';
+  } else {
+    btnNext.textContent = 'Next →'; btnNext.className = 'btn-nav btn-next';
+  }
+}
 
-  '<div class="caution"><div class="caution-txt">CAUTION: ESTIMATION DISCLAIMER</div><div class="caution-sub">This report is generated based on user-provided answers and standard industry averages (ASHRAE, WorldGBC, LEED). It calculates A1-B8 lifecycle modules. It is NOT an official statement, certification, or a substitute for a professional ISO 14040 Life Cycle Assessment (LCA) performed by a qualified engineer.</div></div>' +
+function selectAns(idx, oi) {
+  S.answers[idx] = oi;
+  renderQ(idx);
+}
 
-  '<div style="border:1px solid #0a2e1a;border-radius:8px;padding:12px 16px;margin-bottom:20px"><div style="font-size:8pt;font-weight:700;text-transform:uppercase;letter-spacing:1px;background:#0a2e1a;color:#fff;padding:4px 8px;margin:-12px -16px 12px;border-radius:8px 8px 0 0">Project Parameters</div><table><tr><td style="width:120px;font-weight:600">Project Name:</td><td>' + d.formData.name + '</td><td style="width:120px;font-weight:600">Project Type:</td><td>' + d.formData.type + '</td></tr><tr><td style="font-weight:600">Climate Zone:</td><td>' + d.formData.climate + '</td><td style="font-weight:600">Gross Floor Area:</td><td>' + d.area.toLocaleString() + ' m\u00B2</td></tr><tr><td style="font-weight:600">Grid Carbon:</td><td>' + d.formData.grid + '</td><td style="font-weight:600">Primary Structure:</td><td>' + d.formData.struct + '</td></tr></table></div>' +
+function toggleFlag() {
+  const i = S.cur;
+  if (S.flags.has(i)) S.flags.delete(i); else S.flags.add(i);
+  renderQ(i);
+}
 
-  '<div class="score-box"><div class="score-card"><div class="score-val">' + Math.round(d.intensity).toLocaleString() + '</div><div class="score-lbl">Lifecycle Carbon Intensity (kgCO2e/m\u00B2)</div></div><div class="score-card"><div class="score-val" style="font-size:16pt;color:' + (d.grade==='A'||d.grade==='B'?'#22a355':d.grade==='C'?'#c8982a':'#d63b3b') + '">' + d.leedLevel + '</div><div class="score-lbl">Estimated LEED Alignment / WorldGBC Target</div></div></div>' +
+function goQ(dir) {
+  const n = S.cur + dir;
+  if (n >= 0 && n < S.qs.length) renderQ(n);
+}
 
-  '<h3 style="font-size:12pt;margin-bottom:8px;border-bottom:2px solid #0a2e1a;padding-bottom:4px">Lifecycle Carbon Breakdown (' + d.life + ' Years)</h3><table><thead><tr><th>Emission Module</th><th style="text-align:center">Total Tons CO2e</th><th style="text-align:center">% of Total</th></tr></thead><tbody>' +
-  '<tr><td>A1-A5: Embodied Carbon (Materials/Construction)</td><td style="text-align:center">' + Math.round(d.totalEmbodied/1000).toLocaleString() + '</td><td style="text-align:center">' + Math.round((d.totalEmbodied/(d.totalEmbodied+d.totalOperational+d.totalTransport))*100) + '%</td></tr>' +
-  '<tr><td>B1+B6: Operational Carbon (Energy/Refrigerants)</td><td style="text-align:center">' + Math.round(d.totalOperational/1000).toLocaleString() + '</td><td style="text-align:center">' + Math.round((d.totalOperational/(d.totalEmbodied+d.totalOperational+d.totalTransport))*100) + '%</td></tr>' +
-  '<tr><td>B8: Transport Carbon (Commuting/Mobility)</td><td style="text-align:center">' + Math.round(d.totalTransport/1000).toLocaleString() + '</td><td style="text-align:center">' + Math.round((d.totalTransport/(d.totalEmbodied+d.totalOperational+d.totalTransport))*100) + '%</td></tr>' +
-  '</tbody></table>' +
+function nextOrSubmit() {
+  if (S.cur < S.qs.length - 1) goQ(1); else confirmSubmit();
+}
 
-  '<h3 style="font-size:12pt;margin-bottom:8px;border-bottom:2px solid #0a2e1a;padding-bottom:4px;margin-top:24px">Engineering & LEED Improvement Strategies</h3>' + sugHtml +
+function confirmSubmit() {
+  const unanswered = S.qs.length - Object.keys(S.answers).length;
+  document.getElementById('modal-msg').textContent = unanswered > 0
+    ? `You have ${unanswered} unanswered question(s). Submit anyway?`
+    : 'Are you ready to submit and see your results?';
+  document.getElementById('modal').classList.add('show');
+}
 
-  '</div>' + /* /content */
-  '<div class="ftr"><span>Generated by <span class="ftr-b">Prodify</span> - Go Green, Think Green &nbsp;|&nbsp; ' + d.formData.name + '</span><span>' + refNum + ' &nbsp;|&nbsp; ' + genDate + '</span></div>' +
+function closeModal() { document.getElementById('modal').classList.remove('show'); }
 
-  '<script>setTimeout(function(){window.print();},500);<\/script>' +
-  '</body></html>';
+function finishExam() {
+  closeModal();
+  clearInterval(S.timer);
+  S.tEnd = new Date();
+  buildResults();
+  showPg('pg-results');
+}
 
-  var w = window.open('', '_blank');
-  if (!w) { alert('Pop-up blocked! Please allow pop-ups for this site to generate the PDF.'); return; }
-  w.document.write(pdfHtml);
-  w.document.close();
+// ─── TIMER ───
+function startTimer() {
+  clearInterval(S.timer);
+  S.timer = setInterval(() => {
+    if (S.timeLeft <= 0) { clearInterval(S.timer); finishExam(); return; }
+    S.timeLeft--;
+    const h = Math.floor(S.timeLeft/3600);
+    const m = Math.floor((S.timeLeft%3600)/60);
+    const s = S.timeLeft%60;
+    const el = document.getElementById('timer-val');
+    el.textContent = pad(h)+':'+pad(m)+':'+pad(s);
+    el.classList.toggle('warn', S.timeLeft <= 1800 && S.timeLeft > 600);
+    el.classList.toggle('urgent', S.timeLeft <= 600);
+  }, 1000);
+}
+function pad(n) { return String(n).padStart(2,'0'); }
+
+// ─── RESULTS ───
+function buildResults() {
+  const qs = S.qs, total = qs.length;
+  let correct = 0;
+  const catS = {};
+
+  qs.forEach((q,i) => {
+    const right = S.answers[i] === q.ans;
+    if (right) correct++;
+    if (!catS[q.catL]) catS[q.catL] = {r:0,t:0};
+    catS[q.catL].t++;
+    if (right) catS[q.catL].r++;
+  });
+
+  const pct = Math.round(correct/total*100);
+  const pass = pct >= 70;
+  const elapsed = Math.round((S.tEnd - S.tStart)/1000);
+  const elStr = `${Math.floor(elapsed/60)}m ${elapsed%60}s`;
+
+  // Header dot
+  document.getElementById('hdr-dot').classList.toggle('pass', pass);
+  document.getElementById('hdr-label').textContent = pass ? 'Pass ✓' : 'Below pass';
+
+  const weakCats = Object.entries(catS).filter(([,v]) => v.r/v.t < 0.6).map(([k]) => k);
+
+  const studyMap = {
+    'Integrative Process':['Re-read IP ANSI Standard Guide 2.0','Study OPR vs BOD distinctions deeply','Understand 3 phases: Discovery, Design+Cx, Occupancy','Practice the simple box energy model concept'],
+    'Location & Transportation':['Memorise walking distances: bus ¼ mile, rail ½ mile, diverse uses ½ mile','Know Sensitive Land Protection setbacks: 100 ft from water bodies, 50 ft from wetlands','Study the 60/40 rating system selection rule','Review FTE occupancy calculation formulas'],
+    'Sustainable Sites':['Know SRI thresholds: low-slope roof ≥82, steep-slope ≥39, paving ≥29','Study rainwater management percentiles: 95th, 98th, 85th (zero lot line)','ASTM E1527-05 Phase I ESA validity: 180 days','Review brownfield definition and High Priority Site criteria'],
+    'Water Efficiency':['Memorise all EPAct 1992 baseline flow rates (Table 1)','Know prescriptive path maximums (Table 6): toilet 1.28 gpf, shower 2.00 gpm','Study cooling tower drift requirements: counterflow 0.002%, crossflow 0.005%','Understand Compliance Path 1 vs Path 2 for calculations'],
+    'Energy & Atmosphere':['Study CxA qualifications: 2 projects, 10 months post-occupancy minimum','Know 5% minimum energy improvement for EA Prereq 2','Understand LCGWP+LCODP metric for Enhanced Refrigerant Management','Memorise 10-or-10% sampling rule for functional testing','Know which systems are/are not required to be commissioned'],
+    'Materials & Resources':['Study 100-mile radius with 200% valuation factor','Know EPD credit: 20 products from 5+ manufacturers','Understand HPD vs EPD purposes and which credit each serves','CARB ATCM for composite wood: ULEF or NAF resins','C&D waste: 50% = 1pt, 75% = 2pts; excavated soil excluded'],
+    'Indoor Environmental Quality':['Know all VOC standards: CARB SCM/SCAQMD 1113 (paints), SCAQMD 1168 (adhesives), CDPH v1.1 (products)','ASHRAE 62.1-2010 for ventilation prereq; ASHRAE 55-2010 for thermal comfort','SMACNA guidelines for IAQ construction plan','sDA vs ASE metrics for Daylight credit','Flush-out: 14,000 cu ft/sf of outdoor air'],
+    'Innovation':['6 total IN points: 5 innovation + 1 LEED AP','Only 1 LEED AP point regardless of number of APs','Exemplary performance = double threshold or next tier','Review USGBC pilot credit library options'],
+    'Regional Priority':['Max 4 Regional Priority bonus points','Determined by zip code / project location','Identified by local USGBC chapters','No special documentation beyond earning the underlying credit'],
+  };
+
+  const wrongItems = qs.map((q,i) => ({q, chosen:S.answers[i], right:S.answers[i]===q.ans, idx:i}))
+    .filter(x => !x.right).slice(0, 18);
+
+  document.getElementById('results-content').innerHTML = `
+    <div class="res-hero">
+      <div class="res-name">${S.name}${S.org ? ' · ' + S.org : ''}</div>
+      <div class="res-title">Exam Complete</div>
+      <div class="score-ring">
+        <div class="score-num">${pct}%</div>
+        <div class="score-sub">${correct} / ${total}</div>
+      </div>
+      <div class="grade-pill ${pass ? 'grade-pass' : 'grade-fail'}">${pass ? '✓ PASS — Well done!' : '✗ Below passing threshold (70%)'}</div>
+      <div class="res-time">Time: ${elStr} · LEED AP BD+C Reference Guide v4 · 2013 Edition</div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="rstat"><div class="rv rv-green">${correct}</div><div class="rl">Correct</div></div>
+      <div class="rstat"><div class="rv rv-red">${total-correct}</div><div class="rl">Incorrect</div></div>
+      <div class="rstat"><div class="rv rv-amber">${total - Object.keys(S.answers).length}</div><div class="rl">Skipped</div></div>
+      <div class="rstat"><div class="rv rv-blue">${pct}%</div><div class="rl">Score</div></div>
+      <div class="rstat"><div class="rv rv-green">${elStr}</div><div class="rl">Time Used</div></div>
+    </div>
+
+    <h2 class="section-title">Performance by Category</h2>
+    <div style="background:#fff;border-radius:var(--r);padding:16px 20px;box-shadow:var(--shadow);border:1px solid var(--paper3);margin-bottom:28px">
+      ${Object.entries(catS).map(([cat,v]) => {
+        const p = Math.round(v.r/v.t*100);
+        const col = p>=80?'#2d9458':p>=60?'#c27f00':'#c42b2b';
+        return `<div class="cat-bar-row">
+          <span class="cat-name">${cat}</span>
+          <div class="cat-track"><div class="cat-fill" style="width:${p}%;background:${col}"></div></div>
+          <span class="cat-sc">${v.r}/${v.t} (${p}%)</span>
+        </div>`;
+      }).join('')}
+    </div>
+
+    ${weakCats.length > 0 ? `
+    <h2 class="section-title">Personalised Study Plan</h2>
+    <p style="font-size:13px;color:var(--ink3);margin-bottom:16px">Categories where your score was below 60% — focus here before your exam:</p>
+    ${weakCats.map(cat => `
+      <div class="study-card">
+        <h4>📖 ${cat}</h4>
+        <ul>${(studyMap[cat]||['Review official LEED BD+C Reference Guide chapters for this category']).map(s=>`<li>${s}</li>`).join('')}</ul>
+      </div>`).join('')}` : `
+    <div class="study-card"><h4>🎯 Excellent performance!</h4><ul><li>You scored above 60% in all categories. For the final exam, focus on borderline areas and ensure you can do LCGWP+LCODP calculations, FTE calculations, and water fixture baseline comparisons.</li></ul></div>`}
+
+    ${wrongItems.length > 0 ? `
+    <h2 class="section-title" style="margin-top:32px">Incorrect Answers — Full Review</h2>
+    <div>
+      ${wrongItems.map(item => `
+        <div class="review-item wrong">
+          <div class="rv-q">Q${item.idx+1}: ${item.q.q}</div>
+          ${item.chosen !== undefined
+            ? `<div class="rv-ans rv-wrong">Your answer: ${item.q.opts[item.chosen]}</div>`
+            : `<div class="rv-ans" style="color:var(--amber2)">Not answered</div>`}
+          <div class="rv-ans rv-correct">✓ Correct: ${item.q.opts[item.q.ans]}</div>
+          <div class="rv-exp">${item.q.exp} | Ref: ${item.q.ref}</div>
+        </div>`).join('')}
+    </div>` : ''}
+
+    <div class="action-row">
+      <button class="btn-dl" onclick="genPDF()">📄 Download PDF Report</button>
+      <button class="btn-retake" onclick="retake()">🔄 Retake Exam</button>
+    </div>
+    <p style="text-align:center;font-size:11px;color:var(--ink5);padding-bottom:40px">⚠️ This portal is an educational study aid based on the LEED v4 BD+C Reference Guide (2013 Edition). Results are not affiliated with or endorsed by USGBC or GBCI. Official LEED AP BD+C certification requires passing the Prometric computer-based exam administered by GBCI. LEED® is a registered trademark of USGBC.</p>
+  `;
+
+  window._resData = {pct, correct, total, catS, wrongItems, weakCats, studyMap, elStr, pass};
+}
+
+// ─── PDF ───
+function genPDF() {
+  try {
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      toast('PDF library not ready — please wait and try again');
+      return;
+    }
+    const d = window._resData;
+    if (!d) { toast('Please complete the exam first'); return; }
+
+    const doc = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' });
+    const W = 210, M = 18, RW = W - 2 * M; // right edge = W-M = 192
+    let y = 0;
+
+    /* ─── Safe colour helpers (jsPDF only accepts 3 separate numbers) ─── */
+    function fc(r,g,b){ doc.setFillColor(r,g,b); }
+    function tc(r,g,b){ doc.setTextColor(r,g,b); }
+    function dc(r,g,b){ doc.setDrawColor(r,g,b); }
+    function ft(size,style){ doc.setFontSize(size); doc.setFont('helvetica', style||'normal'); }
+
+    /* ─── Dark background (called on every page including page 1) ─── */
+    function darkBg() {
+      fc(14,17,23); doc.rect(0,0,W,297,'F');
+      fc(45,148,88); doc.rect(0,0,4,297,'F');
+      fc(22,50,32);  doc.rect(4,0,W-4,2,'F');
+    }
+
+    /* ─── Start a new page with background ─── */
+    function newPage() {
+      doc.addPage();
+      darkBg();
+      y = 22;
+    }
+
+    /* ─── Guard: start new page if not enough vertical space ─── */
+    function guard(h) { if (y + h > 276) newPage(); }
+
+    /* ─── Page header strip ─── */
+    function pageHeader(right) {
+      fc(18,35,22); doc.roundedRect(M, y-4, RW, 11, 2, 2, 'F');
+      ft(6.5,'bold'); tc(45,148,88);
+      doc.text('PRODIFY GREEN  |  LEED AP BD+C', M+3, y+2);
+      ft(9,'bold'); tc(200,225,210);
+      doc.text(right, W-M, y+2, { align:'right' });
+      y += 14;
+    }
+
+    /* ─── Section heading line ─── */
+    function heading(title) {
+      guard(14);
+      ft(9,'bold'); tc(45,148,88);
+      doc.text(title, M, y);
+      fc(45,148,88); doc.rect(M, y+2, RW, 0.5, 'F');
+      y += 8;
+    }
+
+    /* ─── Footer drawn on every page at the end ─── */
+    function drawFooter(pg, total) {
+      fc(12,20,14); doc.rect(0,284,W,13,'F');
+      fc(45,148,88); doc.rect(0,284,W,0.5,'F');
+      // Prodify Green left
+      ft(7,'bold'); tc(45,148,88);
+      doc.text('PRODIFY', M, 289);
+      ft(7,'normal'); tc(80,160,100);
+      doc.text('GREEN', M+14, 289);
+      // centre — go green message
+      ft(6,'italic'); tc(45,110,65);
+      doc.text('Think before you print. Save paper. Go Green!', W/2, 289, { align:'center' });
+      // page number right
+      ft(7,'normal'); tc(60,90,75);
+      doc.text(pg + ' / ' + total, W-M, 289, { align:'right' });
+      // sub-line
+      ft(5.5,'normal'); tc(35,60,45);
+      doc.text('LEED AP BD+C Mock Exam  |  Based on LEED v4 BD+C Reference Guide, 2013 Ed. (817 pages)', W/2, 293, { align:'center' });
+    }
+
+    /* ════════════════════════════════════════════
+       PAGE 1 — COVER
+    ════════════════════════════════════════════ */
+    darkBg();
+
+    // Brand box
+    fc(16,28,18); doc.roundedRect(M, 13, 90, 17, 3, 3, 'F');
+    ft(14,'bold'); tc(45,148,88);
+    doc.text('Prodify', M+5, 23);
+    ft(14,'normal'); tc(88,185,120);
+    doc.text('Green', M+38, 23);
+    ft(6,'normal'); tc(55,90,65);
+    doc.text('LEED AP BD+C EXAM PORTAL  |  prodifygogreen.github.io', M+5, 28);
+
+    // Report label
+    ft(7.5,'bold'); tc(55,85,65);
+    doc.text('MOCK EXAM PERFORMANCE REPORT', M, 46);
+
+    // Candidate name
+    const safeName = (S.name || '').substring(0, 34);
+    ft(24,'bold'); tc(225,240,230);
+    doc.text(safeName, M, 60);
+
+    // Org + date
+    ft(8.5,'normal'); tc(85,105,120);
+    const dateStr = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+    const orgLine = (S.org || 'LEED AP BD+C Candidate') + '  |  ' + dateStr;
+    doc.text(orgLine.substring(0, 70), M, 69);
+
+    // Source note
+    ft(7,'normal'); tc(50,72,60);
+    doc.text('Source: LEED Reference Guide for Building Design and Construction, 2013 Edition (817 pages)', M, 77);
+
+    /* Score box left */
+    if (d.pass) { fc(28,105,58); } else { fc(145,32,32); }
+    doc.roundedRect(M, 86, 78, 54, 4, 4, 'F');
+    ft(36,'bold'); tc(255,255,255);
+    doc.text(String(d.pct) + '%', M+39, 112, { align:'center' });
+    ft(9.5,'normal'); tc(200,240,215);
+    doc.text(String(d.correct) + ' / ' + String(d.total) + ' correct', M+39, 120, { align:'center' });
+    // pass/fail band
+    if (d.pass) { fc(18,70,35); } else { fc(90,18,18); }
+    doc.roundedRect(M+10, 124, 58, 10, 3, 3, 'F');
+    ft(9,'bold');
+    if (d.pass) { tc(110,230,145); } else { tc(240,110,110); }
+    doc.text(d.pass ? 'PASS' : 'FAIL', M+39, 131, { align:'center' });
+    ft(6.5,'normal'); tc(190,215,200);
+    doc.text('LEED AP BD+C Score', M+39, 138, { align:'center' });
+
+    /* Stats box right */
+    fc(20,30,45); doc.roundedRect(M+86, 86, 106, 54, 4, 4, 'F');
+    fc(30,48,68); doc.roundedRect(M+86, 86, 106, 8, 4, 4, 'F');
+    ft(6.5,'bold'); tc(45,148,88);
+    doc.text('EXAM DETAILS', M+86+53, 92, { align:'center' });
+    const modeMap = { full:'Full Exam (100 Qs)', quick:'Quick Test (30 Qs)', cat:'Category Focus', practice:'Practice Mode' };
+    const rows = [
+      ['Exam Mode',   modeMap[S.mode] || 'Exam'],
+      ['Time Taken',  d.elStr],
+      ['Correct',     String(d.correct) + ' of ' + String(d.total)],
+      ['Incorrect',   String(d.total - d.correct)],
+      ['Verdict',     d.pass ? 'PASS' : 'FAIL'],
+      ['Standard',    'LEED v4 BD+C Ref Guide'],
+    ];
+    let ry = 100;
+    rows.forEach(function(row) {
+      ft(7.5,'normal');
+      tc(75,105,135); doc.text(row[0] + ':', M+90, ry);
+      tc(195,218,235); doc.text(row[1], W-M-4, ry, { align:'right' });
+      dc(28,42,60); doc.line(M+90, ry+2, W-M-4, ry+2);
+      ry += 8;
+    });
+
+    /* Certification ladder */
+    y = 150;
+    ft(7.5,'bold'); tc(45,148,88);
+    doc.text('LEED CERTIFICATION THRESHOLDS', M, y); y += 7;
+    const tierData = [
+      { n:'Certified', p:40, r:30, g:110, b:60 },
+      { n:'Silver',    p:50, r:75, g:105, b:145 },
+      { n:'Gold',      p:60, r:155, g:125, b:15 },
+      { n:'Platinum',  p:80, r:40, g:140, b:80 },
+    ];
+    tierData.forEach(function(t) {
+      const ok = d.pct >= t.p;
+      if (ok) { fc(t.r, t.g, t.b); } else { fc(22,32,46); }
+      doc.roundedRect(M, y, 170, 8, 2, 2, 'F');
+      ft(8, ok ? 'bold' : 'normal');
+      if (ok) { tc(235,255,242); } else { tc(58,78,98); }
+      doc.text(t.n + '  (' + t.p + ' pts min)', M+4, y+5.5);
+      const gap = ok ? 'ACHIEVED' : ('+' + (t.p - d.pct) + ' pts needed');
+      doc.text(gap, M+167, y+5.5, { align:'right' });
+      y += 11;
+    });
+
+    /* Note box */
+    y = 228;
+    fc(10,22,14); doc.roundedRect(M, y, RW, 20, 3, 3, 'F');
+    fc(45,148,88); doc.rect(M, y, 3, 20, 'F');
+    ft(7.5,'bold'); tc(45,148,88);
+    doc.text('Note:', M+6, y+7);
+    ft(7,'normal'); tc(78,108,90);
+    const noteL = doc.splitTextToSize('This report is generated by the Prodify Green LEED AP BD+C Mock Exam Portal. Questions are based on the official LEED Reference Guide for Building Design and Construction (2013 Ed.). Results are for study purposes only and are not an official GBCI assessment.', RW-10);
+    doc.text(noteL, M+6, y+13);
+
+    /* Go Green box — cover */
+    y = 256;
+    fc(8,24,14); doc.roundedRect(M, y, RW, 18, 3, 3, 'F');
+    fc(33,110,58); doc.rect(M, y, 3, 18, 'F');
+    ft(8,'bold'); tc(55,155,80);
+    doc.text('THINK BEFORE YOU PRINT  --  GO GREEN!', M+7, y+7);
+    ft(7,'italic'); tc(48,100,65);
+    const ecoL = doc.splitTextToSize('This report is best viewed digitally. If printing is necessary, use both sides on recycled paper with eco-friendly ink. Every sheet saved is a step toward a greener planet. Lets go green together!', RW-10);
+    doc.text(ecoL, M+7, y+13);
+
+    /* ════════════════════════════════════════════
+       PAGE 2 — CATEGORY PERFORMANCE + STUDY PLAN
+    ════════════════════════════════════════════ */
+    newPage();
+    pageHeader('CATEGORY PERFORMANCE BREAKDOWN');
+
+    Object.entries(d.catS).forEach(function(entry) {
+      var cat = entry[0], v = entry[1];
+      guard(22);
+      var p = Math.round((v.r / v.t) * 100);
+      var barR, barG, barB;
+      if (p >= 80)      { barR=45;  barG=148; barB=88;  }
+      else if (p >= 60) { barR=175; barG=135; barB=10;  }
+      else              { barR=175; barG=42;  barB=42;  }
+
+      ft(8.5,'bold'); tc(195,218,208);
+      doc.text(cat, M, y+5);
+      ft(8.5,'bold'); tc(barR, barG, barB);
+      doc.text(String(v.r) + '/' + String(v.t) + '  (' + String(p) + '%)', W-M, y+5, { align:'right' });
+
+      // track
+      fc(22,36,26); doc.roundedRect(M, y+7, RW, 5, 2, 2, 'F');
+      // fill
+      if (p > 0) {
+        fc(barR, barG, barB);
+        doc.roundedRect(M, y+7, Math.max(3, RW * p / 100), 5, 2, 2, 'F');
+      }
+      // threshold marks
+      dc(14,17,23);
+      [40,50,60,80].forEach(function(th) {
+        var xm = M + RW * th / 100;
+        doc.line(xm, y+7, xm, y+12);
+      });
+      y += 20;
+    });
+
+    guard(10);
+    ft(6.5,'normal'); tc(48,72,58);
+    doc.text('Threshold marks: 40=Certified  |  50=Silver  |  60=Gold  |  80=Platinum', M, y);
+    y += 7;
+
+    const passCnt = Object.values(d.catS).filter(function(v){ return v.r/v.t >= 0.6; }).length;
+    const totCats = Object.keys(d.catS).length;
+    guard(8); ft(7.5,'italic'); tc(85,125,100);
+    doc.text('You scored above 60% in ' + passCnt + ' of ' + totCats + ' categories.' + (passCnt < totCats ? ' Study plan below.' : ' Excellent performance!'), M, y);
+    y += 10;
+
+    if (d.weakCats && d.weakCats.length > 0) {
+      guard(14);
+      heading('PERSONALISED STUDY PLAN');
+      d.weakCats.slice(0,6).forEach(function(cat) {
+        guard(44);
+        fc(16,38,22); doc.roundedRect(M, y, RW, 8, 2, 2, 'F');
+        fc(33,110,58); doc.rect(M, y, 3, 8, 'F');
+        ft(8,'bold'); tc(78,195,115);
+        doc.text(cat, M+6, y+5.5);
+        y += 11;
+        var tips = (d.studyMap && d.studyMap[cat]) ? d.studyMap[cat] : ['Review the official LEED BD+C Reference Guide chapters for this category.'];
+        tips.forEach(function(tip) {
+          guard(9);
+          ft(7.5,'normal'); tc(125,165,140);
+          var ls = doc.splitTextToSize('- ' + tip, RW-6);
+          doc.text(ls, M+4, y);
+          y += ls.length * 4.8 + 2;
+        });
+        y += 4;
+      });
+    }
+
+    /* ════════════════════════════════════════════
+       PAGE 3+ — INCORRECT ANSWERS
+    ════════════════════════════════════════════ */
+    if (d.wrongItems && d.wrongItems.length > 0) {
+      newPage();
+      pageHeader('INCORRECT ANSWERS  --  FULL REVIEW');
+
+      d.wrongItems.slice(0, 18).forEach(function(item) {
+        guard(50);
+
+        // Q header bar
+        fc(20,34,26); doc.roundedRect(M, y, RW, 6, 1, 1, 'F');
+        fc(33,110,58); doc.rect(M, y, 3, 6, 'F');
+        ft(7.5,'bold'); tc(45,148,88);
+        doc.text('Q' + String(item.idx+1), M+6, y+4.2);
+        ft(7,'normal'); tc(55,88,70);
+        var catLabel = (item.q && item.q.catL) ? item.q.catL : '';
+        doc.text(catLabel, W-M, y+4.2, { align:'right' });
+        y += 9;
+
+        // Question
+        guard(14);
+        ft(8.5,'bold'); tc(195,218,208);
+        var qT = (item.q && item.q.q) ? item.q.q : '';
+        var qls = doc.splitTextToSize(qT, RW);
+        doc.text(qls, M, y); y += qls.length * 5 + 3;
+
+        // Your answer
+        guard(9);
+        if (item.chosen !== undefined && item.q && item.q.opts) {
+          fc(34,16,16); doc.roundedRect(M, y, RW, 7, 1, 1, 'F');
+          ft(7.5,'normal'); tc(180,68,68);
+          var wa = doc.splitTextToSize('Your answer: ' + item.q.opts[item.chosen], RW-4);
+          doc.text(wa[0], M+3, y+4.8);
+        } else {
+          fc(28,24,10); doc.roundedRect(M, y, RW, 7, 1, 1, 'F');
+          ft(7.5,'normal'); tc(155,125,38);
+          doc.text('Not answered', M+3, y+4.8);
+        }
+        y += 9;
+
+        // Correct answer
+        guard(9);
+        fc(12,34,18); doc.roundedRect(M, y, RW, 7, 1, 1, 'F');
+        fc(33,110,58); doc.rect(M, y, 2, 7, 'F');
+        ft(7.5,'bold'); tc(58,195,95);
+        var ca = (item.q && item.q.opts) ? doc.splitTextToSize('Correct: ' + item.q.opts[item.q.ans], RW-4) : [];
+        if (ca.length) doc.text(ca[0], M+4, y+4.8);
+        y += 9;
+
+        // Explanation
+        guard(18);
+        ft(7,'normal'); tc(98,138,112);
+        var exp = (item.q && item.q.exp) ? item.q.exp : '';
+        var els = doc.splitTextToSize(exp, RW);
+        doc.text(els, M, y); y += els.length * 4.2 + 2;
+
+        // Ref
+        guard(6);
+        ft(6.5,'italic'); tc(48,82,62);
+        var ref = (item.q && item.q.ref) ? item.q.ref : '';
+        var refL = doc.splitTextToSize('Ref: ' + ref, RW);
+        doc.text(refL[0], M, y); y += 4;
+
+        // Standard
+        if (item.q && item.q.std) {
+          guard(6);
+          ft(6.5,'italic'); tc(38,68,52);
+          var stdL = doc.splitTextToSize('Standard: ' + item.q.std, RW);
+          doc.text(stdL[0], M, y); y += 4;
+        }
+        y += 6;
+      });
+    }
+
+    /* ════════════════════════════════════════════
+       FINAL PAGE — DISCLAIMER + GO GREEN
+    ════════════════════════════════════════════ */
+    newPage();
+
+    // Prodify logo block
+    fc(14,28,16); doc.roundedRect(M, y, RW, 26, 4, 4, 'F');
+    fc(45,148,88); doc.rect(M, y, 3, 26, 'F');
+    ft(18,'bold'); tc(45,148,88);
+    doc.text('Prodify', M+8, y+12);
+    ft(18,'normal'); tc(85,185,115);
+    doc.text('Green', M+8+33, y+12);
+    ft(7,'normal'); tc(55,95,70);
+    doc.text('LEED AP BD+C Exam Portal  |  prodifygogreen.github.io', M+8, y+20);
+    ft(7,'italic'); tc(32,85,52);
+    doc.text('Building a greener world, one professional at a time.', W-M, y+20, { align:'right' });
+    y += 34;
+
+    heading('DISCLAIMER -- IMPORTANT NOTICE');
+
+    var disc = [
+      'This performance report was generated by the Prodify Green LEED AP BD+C Mock Exam Portal, an independent educational study aid for candidates preparing for the LEED AP Building Design and Construction (BD+C) specialty examination. All questions and explanations are based on the LEED Reference Guide for Building Design and Construction, 2013 Edition (updated July 2014), published by the U.S. Green Building Council (USGBC).',
+      'This tool is NOT affiliated with, endorsed by, or approved by the U.S. Green Building Council (USGBC) or the Green Building Certification Institute (GBCI). Results shown are for educational purposes only and do not constitute official LEED AP credentials. Official LEED AP BD+C certification is administered exclusively by GBCI through computer-based testing at authorised Prometric test centres.',
+      'LEED(R) is a registered trademark of the U.S. Green Building Council. Always verify current requirements against the latest official LEED Reference Guides and GBCI candidate handbook before your examination.',
+    ];
+    ft(7.5,'normal'); tc(88,112,98);
+    disc.forEach(function(para) {
+      guard(22);
+      var ls = doc.splitTextToSize(para, RW);
+      doc.text(ls, M, y);
+      y += ls.length * 4.6 + 6;
+    });
+
+    // Go Green caution block
+    guard(42);
+    y += 4;
+    fc(8,24,14); doc.roundedRect(M, y, RW, 36, 4, 4, 'F');
+    fc(33,110,58); doc.rect(M, y, 3, 36, 'F');
+    fc(22,75,40); doc.circle(W-M-14, y+14, 9, 'F');
+    fc(40,135,72); doc.circle(W-M-14, y+14, 6, 'F');
+    fc(8,24,14);  doc.circle(W-M-14, y+14, 2.5, 'F');
+    ft(10,'bold'); tc(45,148,88);
+    doc.text('Think Before You Print  --  Go Green!', M+8, y+11);
+    ft(7.5,'normal'); tc(55,125,80);
+    var gMsgs = [
+      'This report is designed for digital use. Viewing on screen saves paper, energy, and trees.',
+      'If printing is necessary: use both sides, choose recycled paper, and select eco-friendly ink.',
+      'Every page saved is a step toward a greener planet. Lets go green together!',
+    ];
+    var gy2 = y + 18;
+    gMsgs.forEach(function(line) {
+      fc(30,90,50); doc.circle(M+6, gy2-0.5, 1, 'F');
+      ft(7.5,'normal'); tc(55,125,80);
+      var gl = doc.splitTextToSize(line, RW-18);
+      doc.text(gl, M+10, gy2); gy2 += gl.length * 5 + 2;
+    });
+    y += 42;
+
+    // Website line
+    guard(14);
+    y += 4;
+    ft(7.5,'bold'); tc(45,148,88);
+    doc.text('prodifygogreen.github.io', M, y);
+    ft(7.5,'normal'); tc(48,78,62);
+    doc.text('  |  LEED GA Portal  |  LEED AP BD+C Portal  |  Green Building Tools  |  Free forever', M+46, y);
+    y += 7;
+    ft(6.5,'italic'); tc(32,58,44);
+    doc.text('Share this portal with fellow green building professionals.', M, y);
+
+    /* ════════════════════════════════════════════
+       FOOTERS ON ALL PAGES
+    ════════════════════════════════════════════ */
+    var totalPg = doc.getNumberOfPages();
+    for (var pg = 1; pg <= totalPg; pg++) {
+      doc.setPage(pg);
+      drawFooter(pg, totalPg);
+    }
+
+    /* ─── Save ─── */
+    var fname = 'ProdifyGreen_LEED_APBDC_' + (S.name || 'report').replace(/\s+/g,'_') + '_' + new Date().toISOString().slice(0,10) + '.pdf';
+    doc.save(fname);
+    toast('PDF report downloaded!');
+
+  } catch(err) {
+    console.error('PDF generation error:', err);
+    toast('PDF error: ' + (err.message || 'unknown error'));
+  }
+}
+
+function retake() { showPg('pg-land'); clearInterval(S.timer); }
+
+function showPg(id) {
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
 }
 </script>
 </body>
